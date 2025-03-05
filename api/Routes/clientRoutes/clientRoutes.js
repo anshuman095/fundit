@@ -1,0 +1,46 @@
+import { Router } from "express";
+
+import { getAdminDetails } from "../../Controller/adminController.js";
+import aboutUsRoutes from "../adminRoutes/aboutUsRoutes.js";
+import heroBannerRoutes from "../adminRoutes/heroBannerRoutes.js";
+import locationRoutes from "../adminRoutes/locationRoutes.js";
+import navigationMenuRoutes from "../adminRoutes/navigationMenuRoutes.js";
+import ourPartnersRoutes from "../adminRoutes/ourPartnersRoutes.js";
+import ourServicesRoutes from "../adminRoutes/ourServicesRoutes.js";
+import productRoutes from "../adminRoutes/productRoutes.js";
+import whoAreWeRoutes from "../adminRoutes/whoAreWeRoutes.js";
+import contactRoutes from "../adminRoutes/contactRoutes.js";
+import partnerRoutes from "../adminRoutes/partnerRoutes.js";
+import blogRoutes from "../adminRoutes/blogRoutes.js";
+import testimonialRoutes from "../adminRoutes/testimonialRoutes.js";
+import sectionManagerRoutes from "../adminRoutes/sectionManagerRoutes.js";
+import queryFormRoutes from "../adminRoutes/queryFormRoutes.js";
+import contactFormRoutes from "../adminRoutes/contactFormRoutes.js";
+import bannerRoutes from "../adminRoutes/bannerRoutes.js";
+import ourTeamRoutes from "../adminRoutes/ourTeamRoutes.js";
+import fleetRoutes from "../adminRoutes/fleetRoutes.js";
+import moduleRoutes from "../adminRoutes/moduleRoutes.js";
+const clientRouter = Router();
+
+clientRouter.use("/aboutUs", aboutUsRoutes);
+clientRouter.use("/heroBanner", heroBannerRoutes);
+clientRouter.use("/location", locationRoutes);
+clientRouter.use("/navigationMenu", navigationMenuRoutes);
+clientRouter.use("/ourPartners", ourPartnersRoutes);
+clientRouter.use("/services", ourServicesRoutes);
+clientRouter.use("/product", productRoutes);
+clientRouter.use("/whoWeAre", whoAreWeRoutes);
+clientRouter.use("/contact", contactRoutes);
+clientRouter.use("/partner", partnerRoutes);
+clientRouter.use("/blogs", blogRoutes);
+clientRouter.use("/testimonial", testimonialRoutes);
+clientRouter.use("/section-manager", sectionManagerRoutes);
+clientRouter.use("/query-form", queryFormRoutes);
+clientRouter.use("/contact-form", contactFormRoutes);
+clientRouter.use("/banner", bannerRoutes);
+clientRouter.use("/our-team", ourTeamRoutes);
+clientRouter.use("/fleet", fleetRoutes);
+clientRouter.use("/module", moduleRoutes);
+clientRouter.get("/admin_info", getAdminDetails);
+
+export default clientRouter;

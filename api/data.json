@@ -1,0 +1,17 @@
+[
+  {
+    "title": "User Management",
+    "link": "/user-management",
+    "icon": "PersonOutlineOutlinedIcon"
+  },
+  {
+    "title": "Roles & Permissions",
+    "link": "/all-roles",
+    "icon": "VerifiedUserOutlinedIcon"
+  },
+  {
+    "title": "Settings",
+    "link": "/settings",
+    "icon": "SettingsIcon"
+  }
+]
