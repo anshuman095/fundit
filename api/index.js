@@ -20,7 +20,7 @@ import { saveRedirectUri } from "./helper/general.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 8002;
+const PORT = process.env.PORT || 8003;
 
 app.use(cors());
 

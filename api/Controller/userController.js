@@ -13,7 +13,7 @@ import User from "../sequelize/userSchema.js";
 import { Admin } from "../helper/constants.js";
 const db = makeDb();
 
-/** Funtion to login and register new users  */
+/** Function to login and register new users  */
 
 export const userLogin = asyncHandler(async (req, res) => {
   try {
@@ -21,13 +21,13 @@ export const userLogin = asyncHandler(async (req, res) => {
 
     /**Check that mobile number is already registered or not */
 
-    const checkRegisterdUserQuery = `Select * from users WHERE phone = '${mobile}'`;
-    const checkRegisterdUser = await db.query(checkRegisterdUserQuery);
+    const checkRegisteredUserQuery = `Select * from users WHERE phone = '${mobile}'`;
+    const checkRegisteredUser = await db.query(checkRegisteredUserQuery);
 
-    /**If given mobile number is registerd then send otp */
+    /**If given mobile number is registered then send otp */
 
-    if (checkRegisterdUser.length > 0) {
-      if (checkRegisterdUser[0].is_active == 0) {
+    if (checkRegisteredUser.length > 0) {
+      if (checkRegisteredUser[0].is_active == 0) {
         return res.status(200).json({
           status: false,
           message: "Your account has been deactivated",
@@ -73,9 +73,13 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
     if (id) {
       const { query, values } = updateQueryBuilder(User, req.body);
       await db.query(query, values);
+
+      const getQuery = `SELECT username, full_name, email, image, address, mobile FROM users WHERE id = ${id}`;
+      const user = await db.query(getQuery);
       return res.status(200).json({
         status: true,
         message: "User updated successfully",
+        data: user[0],
       });
     }
     const userExists = await db.query(`SELECT * FROM users WHERE email = '${req.body.email}'`);

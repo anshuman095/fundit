@@ -113,7 +113,7 @@ const ensureViewExists = async () => {
     const checkViewQuery = `
     SELECT COUNT(*) AS count
     FROM information_schema.views
-    WHERE table_schema = 'volt_hi' AND table_name = 'users_view'
+    WHERE table_schema = 'rk_mission' AND table_name = 'users_view'
   `;
 
     const [result] = await sequelize.query(checkViewQuery);

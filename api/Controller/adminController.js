@@ -16,7 +16,7 @@ export const adminLogin = asyncHandler(async (req, res) => {
 
     /**Check username is exist or not */
 
-    const checkAdminQuery = `Select * from users WHERE email = '${username}'`;
+    const checkAdminQuery = `Select users.id, username, password, full_name, email, status, mobile, role_id, image, address, asset, roles.name as role_name from users LEFT JOIN roles ON roles.id = users.role_id WHERE email = '${username}'`;
     const checkAdmin = await db.query(checkAdminQuery);
 
     if (checkAdmin.length == 0) {
@@ -46,6 +46,7 @@ export const adminLogin = asyncHandler(async (req, res) => {
         { expiresIn: "30d" }
       );
 
+      delete checkAdmin[0].password
       return res.status(200).json({
         status: true,
         token: token,

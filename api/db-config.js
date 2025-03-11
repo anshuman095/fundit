@@ -2,9 +2,9 @@ import mysql from "mysql2";
 import util from "util";
 const config = {
   host: "localhost",
-  user: "user",
-  password: "12345678",
-  database: "volt_hi",
+  user: "root",
+  password: "1234",
+  database: "rk_mission",
 };
 export const con = mysql.createConnection(config);
 
