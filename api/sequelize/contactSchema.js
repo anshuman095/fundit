@@ -11,64 +11,9 @@ const Contact = sequelize.define(
       primaryKey: true,
       comment: "Unique identifier for the contact (auto-incremented)",
     },
-    // sections: {
-    //   type: DataTypes.JSON,
-    //   allowNull: false,
-    // },
-    title: {
-      type: DataTypes.TEXT("long"),
+    sections: {
+      type: DataTypes.JSON,
       allowNull: false,
-      comment: "Title of the contact",
-    },
-    sub_title: {
-      type: DataTypes.TEXT("long"),
-      allowNull: false,
-      comment: "Sub title of the contact",
-    },
-    company_registration: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Company Registration of the contact",
-    },
-    location: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Location of the contact",
-    },
-    mobile: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "mobile of the contact",
-    },
-    linkedin_url: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Linkedin Url of the contact",
-    },
-    facebook_url: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Facebook Url of the contact",
-    },
-    twitter_url: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Twitter Url of the contact",
-    },
-    instagram_url: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Instagram Url of the contact",
-    },
-    asset: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Asset of the contact",
-    },
-    emails: {
-      type: DataTypes.TEXT("long"),
-      allowNull: true,
-      comment: "Emails of the contact",
     },
   },
   {
@@ -80,4 +25,5 @@ const Contact = sequelize.define(
   }
 );
 
+// console.log(await Contact.sync({ alter: true }));
 export default Contact;

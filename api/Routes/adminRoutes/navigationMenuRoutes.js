@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getNavigationMenu, addNavigationMenu } from "../../Controller/navigationMenuController.js";
+import { getNavigationMenu, addNavigationMenu, getNavigationMenuChild } from "../../Controller/navigationMenuController.js";
 
 const navigationMenuRoutes = Router();
 
@@ -23,5 +23,6 @@ navigationMenuRoutes.post("/create-update-navigation-menu", addNavigationMenu);
  *         description: Navigation menus not found
  */
 navigationMenuRoutes.get("/get-menu", getNavigationMenu);
+navigationMenuRoutes.get("/get-menu-child", getNavigationMenuChild);
 
 export default navigationMenuRoutes;

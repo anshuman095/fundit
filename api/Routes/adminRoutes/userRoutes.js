@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUpdateUser, deleteUser, getUsers, userLogin } from "../../Controller/userController.js";
+import { createUpdateUser, deleteUser, getDonar, getStaff, getUsers, getVolunteer, userLogin } from "../../Controller/userController.js";
 import { validate } from "../../helper/general.js";
 import { userSchema } from "../../helper/validations.js";
 
@@ -119,5 +119,11 @@ userRoutes.get("/get-users/:id?", getUsers);
  *         description: User not found
  */
 userRoutes.delete("/delete-user/:id", deleteUser);
+
+userRoutes.get("/get-donar/:id?", getDonar);
+
+userRoutes.get("/get-volunteer/:id?", getVolunteer);
+
+userRoutes.get("/get-staff/:id?", getStaff);
 
 export default userRoutes;

@@ -43,9 +43,6 @@ export const getNavigationMenu = asyncHandler(async (req, res) => {
         message: "Navigation menu Not Found",
       });
     }
-    getNavigation.forEach((data) => {
-      data.menu_items = JSON.parse(data.menu_items);
-    });
     return res.status(200).json({
       status: true,
       data: getNavigation[0],
@@ -74,6 +71,50 @@ export const deleteNavigationMenu = asyncHandler(async (req, res) => {
         message: "Navigation menu not found",
       });
     }
+  } catch (error) {
+    storeError(error);
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+export const getNavigationMenuChild = asyncHandler(async (req, res) => {
+  try {
+    let where = "";
+    if (req.params?.id) {
+      where = `AND id = ${req.params.id}`;
+    }
+    const getNavigationQuery = `SELECT * FROM navigation_menu`;
+    const getNavigation = await db.query(getNavigationQuery);
+    if (getNavigation.length == 0) {
+      return res.status(404).json({
+        status: false,
+        message: "Navigation menu Not Found",
+      });
+    }
+    let menuItems = getNavigation[0]?.menu_items || [];
+
+    let menuMap = new Map();
+
+    menuItems?.forEach((item) => {
+      menuMap.set(item.title, { ...item, children: [] });
+    });
+
+    let rootMenus = [];
+
+    menuItems?.forEach((item) => {
+      if (item.parent_menu && menuMap.has(item.parent_menu)) {
+        menuMap.get(item.parent_menu).children.push(menuMap.get(item.title));
+      } else {
+        rootMenus.push(menuMap.get(item.title));
+      }
+    });
+    return res.status(200).json({
+      status: true,
+      data: rootMenus,
+    });
   } catch (error) {
     storeError(error);
     return res.status(500).json({

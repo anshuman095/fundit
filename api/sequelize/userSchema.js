@@ -77,6 +77,21 @@ const User = sequelize.define(
       allowNull: true,
       comment: "Asset of the user",
     },
+    aadhar_number: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Aadhar number of the user",
+    },
+    pan_number: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Pan number of the user",
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Donor or Volunteer or Staff",
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -87,4 +102,5 @@ const User = sequelize.define(
   { tableName: "users", timestamps: false, charset: "utf8mb4", collate: "utf8mb4_general_ci" }
 );
 
+// console.log(await User.sync({ alter: true }));
 export default User;

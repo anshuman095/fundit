@@ -48,10 +48,12 @@ const db = makeDb();
 export const createUpdateContact = asyncHandler(async (req, res) => {
   try {
     const { id } = req.body;
+    let sections = [];
 
-    if (req.files && req.files.asset) {
-      req.body.asset = await uploadFile("users", req.files.asset);
+    if (req.body.sections) {
+      sections = JSON.parse(req.body.sections);
     }
+    
     if (id) {
       const { query, values } = updateQueryBuilder(Contact, req.body);
       await db.query(query, values);
@@ -94,7 +96,6 @@ export const getContact = asyncHandler(async (req, res) => {
         message: "Contact Not Found",
       });
     }
-    getContact[0].emails = JSON.parse(getContact[0].emails);
     return res.status(200).json({
       status: true,
       data: getContact[0],

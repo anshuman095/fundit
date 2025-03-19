@@ -8,6 +8,7 @@ import moment from "moment";
 import { google } from "googleapis";
 import nodemailer from "nodemailer";
 import axios from "axios";
+import PDFDocument  from "pdfkit";
 import { makeDb } from "../db-config.js";
 import { fileURLToPath } from "url";
 import Post from "../sequelize/postSchema.js";
@@ -518,7 +519,7 @@ export function generateOTP(length = 6) {
   return otp;
 }
 
-export async function sendEmail(from, to, subject, html) {
+export async function sendEmail(from, to, subject, html, attachment) {
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
     host: process.env.HOST,
@@ -536,6 +537,12 @@ export async function sendEmail(from, to, subject, html) {
     to: to,
     subject: subject,
     html: html,
+    attachments: [
+      {
+        filename: attachment?.fileName,
+        path: attachment?.filePath,     
+      },
+    ],
   };
 
   try {
@@ -714,17 +721,17 @@ export async function createPost(accessToken, linkedin_id, data, mediaUrn = null
         shareMediaCategory: mediaCategory,
         media: mediaUrn
           ? [
-              {
-                status: "READY",
-                description: {
-                  text: media_description ?? "",
-                },
-                media: mediaUrn,
-                title: {
-                  text: media_title ?? "",
-                },
+            {
+              status: "READY",
+              description: {
+                text: media_description ?? "",
               },
-            ]
+              media: mediaUrn,
+              title: {
+                text: media_title ?? "",
+              },
+            },
+          ]
           : [],
       },
     },
@@ -1133,6 +1140,147 @@ export function generateReplyEmail(type, userName, userMessage, response) {
     </body>
     </html>
   `;
+}
+
+export function generateDonationEmail(userName, amount) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 20px auto;
+          background-color: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        }
+        .header {
+          background-color: #28a745;
+          color: #ffffff;
+          padding: 20px;
+          text-align: center;
+          font-size: 24px;
+        }
+        .content {
+          padding: 20px;
+          line-height: 1.6;
+          color: #333333;
+        }
+        .content p {
+          margin: 0 0 15px;
+        }
+        .footer {
+          background-color: #f4f4f4;
+          color: #888888;
+          padding: 10px 20px;
+          text-align: center;
+          font-size: 14px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-container">
+        <div class="header">
+          Thank You for Your Donation!
+        </div>
+        <div class="content">
+          <p>Dear <strong>${userName}</strong>,</p>
+          <p>We sincerely appreciate your generous donation of <strong>₹${amount}</strong>. Your support helps us continue our mission.</p>
+          <p>Please find the attached invoice for your records.</p>
+          <p>Thank you for making a difference!</p>
+        </div>
+        <div class="footer">
+          &copy; 2024 VoltHi. All rights reserved.
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export function generateInvoice(data) {
+  return new Promise((resolve, reject) => {
+      const doc = new PDFDocument({ margin: 50 });
+      const timestamp = moment().format("YYYY-MM-DD_HH-mm-ss");
+      const sanitizedUserName = data.full_name.replace(/[^a-zA-Z0-9]/g, "_");
+      const fileName = `invoice_${sanitizedUserName}_${timestamp}.pdf`;
+      const filePath = path.join(process.cwd(), "public", "invoice", fileName);
+
+      if (!fs.existsSync(path.dirname(filePath))) {
+          fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      }
+
+      const stream = fs.createWriteStream(filePath);
+      doc.pipe(stream);
+
+      // Title
+      doc.fontSize(20).text('Donation Invoice', { align: 'center' }).moveDown(2);
+
+      // Define table data dynamically
+      const tableData = [];
+      const fields = {
+          "Full Name": data?.full_name,
+          "Email": data?.email,
+          "Mobile": data?.mobile,
+          "Aadhar Number": data?.aadhar_number,
+          "PAN Number": data?.pan_number,
+          "Donation Amount": `Rs. ${data?.donation_amount}`,
+          "Address": data?.address,
+          "Donation Type": data?.donation_type,
+          "Anonymous": data?.anonymous === "1" ? "Yes" : "No",
+          // "Aadhar URL": data?.aadhar_url,
+          // "PAN URL": data?.pan_url
+      };
+
+      // Push only available fields to tableData
+      Object.entries(fields).forEach(([key, value]) => {
+          if (value) {
+              tableData.push([key, value]);
+          }
+      });
+
+      // Function to draw a table without headers
+      function drawTable(doc, startX, startY, tableData) {
+          const columnWidths = [200, 300]; // Define column widths
+          let y = startY;
+
+          doc.fontSize(12).font("Helvetica");
+          tableData.forEach((row) => {
+              let x = startX;
+
+              row.forEach((cell, cellIndex) => {
+                  doc.rect(x, y, columnWidths[cellIndex], 25).stroke();
+                  doc.text(cell, x + 5, y + 7, { width: columnWidths[cellIndex] - 10 });
+                  x += columnWidths[cellIndex];
+              });
+
+              y += 25;
+          });
+
+          return y;
+      }
+
+      const tableStartY = doc.y;
+      drawTable(doc, 50, tableStartY, tableData);
+
+      doc.moveDown(2);
+      doc.fontSize(14).text('Thank you for your generous donation!', { align: 'center' });
+
+      doc.end();
+
+      stream.on('finish', () => resolve({ filePath, fileName }));
+      stream.on('error', reject);
+  });
 }
 
 export function convertToUnixTimestamp(dateStr) {
@@ -1761,4 +1909,25 @@ export const saveRedirectUri = async (req, res, next) => {
       message: error.message,
     });
   }
+};
+
+export const checkUserExists = async (aadhar_number, pan_number) => {
+  let query = `SELECT id FROM users WHERE `;
+  let conditions = [];
+  let values = [];
+
+  if (aadhar_number) {
+    conditions.push("aadhar_number = ?");
+    values.push(aadhar_number);
+  }
+
+  if (pan_number) {
+    conditions.push("pan_number = ?");
+    values.push(pan_number);
+  }
+
+  query += conditions.join(" OR ");
+
+  const [result] = await db.query(query, values);
+  return result?.id ? result.id : null;
 };

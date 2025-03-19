@@ -11,6 +11,7 @@ import {
 } from "../helper/general.js";
 import User from "../sequelize/userSchema.js";
 import { Admin } from "../helper/constants.js";
+import Donation from "../sequelize/donationSchema.js";
 const db = makeDb();
 
 /** Function to login and register new users  */
@@ -59,10 +60,18 @@ export const userLogin = asyncHandler(async (req, res) => {
 
 export const createUpdateUser = asyncHandler(async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id, type } = req.body;
 
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);
+    } else {
+      req.body.password = await hashPassword("12345678");
+    }
+    if(!req.body.role_id) {
+      req.body.role_id = 2;
+    }
+    if(!req.body.username) {
+      req.body.username = req.body.full_name;
     }
     if (req.files && req.files.image) {
       req.body.image = await uploadFile("users", req.files.image);
@@ -74,11 +83,24 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
       const { query, values } = updateQueryBuilder(User, req.body);
       await db.query(query, values);
 
+      const updateDonationQuery = `
+        UPDATE donation 
+        SET 
+        full_name = ?, 
+        email = ?, 
+        mobile = ?, 
+        address = ? 
+        WHERE user_id = ?
+      `;
+
+      const donationValues = [ req.body.full_name, req.body.email, req.body.mobile, req.body.address, id];
+      await db.query(updateDonationQuery, donationValues);
+
       const getQuery = `SELECT username, full_name, email, image, address, mobile FROM users WHERE id = ${id}`;
       const user = await db.query(getQuery);
       return res.status(200).json({
         status: true,
-        message: "User updated successfully",
+        message: `${type ? `${type} updated successfully` : "User updated successfully"}`,
         data: user[0],
       });
     }
@@ -100,11 +122,23 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
         });
       }
     }
+    if(req.body.aadhar_number && req.body.pan_number) {
+      const existingUser = await db.query(
+        `SELECT * FROM users WHERE aadhar_number = '${req.body.aadhar_number}' 
+        OR pan_number = '${req.body.pan_number}'`
+      );
+      if (existingUser.length > 0) {
+        return res.status(409).json({
+          status: false,
+          message: "User with this Aadhar or PAN number already exists",
+        });
+      }
+    }
     const { query, values } = createQueryBuilder(User, req.body);
     await db.query(query, values);
     return res.status(201).json({
       status: true,
-      message: "User created successfully",
+      message: `${type ? `${type} created successfully` : "User created successfully"}`,
     });
   } catch (error) {
     storeError(error);
@@ -151,6 +185,133 @@ export const deleteUser = asyncHandler(async (req, res) => {
         message: "User not found",
       });
     }
+  } catch (error) {
+    storeError(error);
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+export const getDonar = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    let page = parseInt(req.query.page) || 1;
+    let pageSize = parseInt(req.query.pageSize) || 10;
+    let offset = (page - 1) * pageSize;
+    const { email, search } = req.query;
+    let query = `SELECT users.id, users.username, users.full_name, users.email, users.mobile, users.status, users.type, users.aadhar_number, users.pan_number, users.address, users.role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.deleted = 0 AND users.type = 'Donar' AND users.email <> '${Admin.email}'`;
+    let countQuery = `SELECT COUNT(*) AS total FROM users WHERE users.deleted = 0 AND users.type = 'Donar' AND users.email <> '${Admin.email}'`;
+    if (id) {
+      query += ` AND users.id = ${id}`;
+      countQuery += ` AND users.id = ${id}`;
+    }
+    if (email) {
+      query += ` AND users.email = '${email}'`;
+      countQuery += ` AND users.email = '${email}'`;
+    }
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      query += ` AND (
+        LOWER(users.full_name) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.email) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.mobile) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.aadhar_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.pan_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.address) LIKE '%${lowerSearch}%'
+      )`;
+
+      countQuery += ` AND (
+        LOWER(users.full_name) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.email) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.mobile) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.aadhar_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.pan_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.address) LIKE '%${lowerSearch}%'
+      )`;
+    }
+    const users = await db.query(query);
+    const totalCountResult = await db.query(countQuery);
+    const total = totalCountResult[0]?.total || 0;
+    return res.status(200).json({
+      status: true,
+      data: users,
+      total: total,
+    });
+  } catch (error) {
+    storeError(error);
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+export const getVolunteer = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { search } = req.query;
+    let query = `SELECT users.id, users.username, users.full_name, users.email, users.mobile, users.status, users.type, users.aadhar_number, users.pan_number, users.address, users.role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.deleted = 0 AND users.type = 'Volunteer' AND users.email <> '${Admin.email}'`;
+    let countQuery = `SELECT COUNT(*) AS total FROM users WHERE users.deleted = 0 AND users.type = 'Volunteer' AND users.email <> '${Admin.email}'`;
+    if (id) {
+      query += ` AND users.id = ${id}`;
+      countQuery += ` AND users.id = ${id}`;
+    }
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      query += ` AND (
+        LOWER(users.full_name) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.email) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.mobile) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.aadhar_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.pan_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.address) LIKE '%${lowerSearch}%'
+      )`;
+
+      countQuery += ` AND (
+        LOWER(users.full_name) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.email) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.mobile) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.aadhar_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.pan_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.address) LIKE '%${lowerSearch}%'
+      )`;
+    }
+    const users = await db.query(query);
+    const totalCountResult = await db.query(countQuery);
+    const total = totalCountResult[0]?.total || 0;
+    return res.status(200).json({
+      status: true,
+      data: users,
+      total: total,
+    });
+  } catch (error) {
+    storeError(error);
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+});
+
+export const getStaff = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    let query = `SELECT users.id, users.username, users.full_name, users.email, users.mobile, users.status, users.type, users.aadhar_number, users.pan_number, users.address, users.role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.deleted = 0 AND users.type = 'Staff' AND users.email <> '${Admin.email}'`;
+    let countQuery = `SELECT COUNT(*) AS total FROM users WHERE users.deleted = 0 AND users.type = 'Staff' AND users.email <> '${Admin.email}'`;
+    if (id) {
+      query += ` AND users.id = ${id}`;
+      countQuery += ` AND users.id = ${id}`;
+    }
+    const users = await db.query(query);
+    const totalCountResult = await db.query(countQuery);
+    const total = totalCountResult[0]?.total || 0;
+    return res.status(200).json({
+      status: true,
+      data: users,
+      total: total,
+    });
   } catch (error) {
     storeError(error);
     return res.status(500).json({

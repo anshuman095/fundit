@@ -17,7 +17,7 @@ export const userSchema = Joi.object({
   username: Joi.string().when("id", {
     is: Joi.exist(),
     then: Joi.optional(),
-    otherwise: Joi.required(),
+    // otherwise: Joi.required(),
   }),
   full_name: Joi.string().when("id", {
     is: Joi.exist(),
@@ -32,12 +32,12 @@ export const userSchema = Joi.object({
   role_id: Joi.number().when("id", {
     is: Joi.exist(),
     then: Joi.optional(),
-    otherwise: Joi.required(),
+    // otherwise: Joi.required(),
   }),
   password: Joi.string().when("id", {
     is: Joi.exist(),
     then: Joi.optional(),
-    otherwise: Joi.required(),
+    // otherwise: Joi.required(),
   }),
   status: Joi.number().optional(),
 }).options({ allowUnknown: true });
@@ -361,4 +361,94 @@ export const moduleSchema = Joi.object({
     otherwise: Joi.required(),
   }),
   parent_id: Joi.number().optional(),
+}).options({ allowUnknown: true });
+
+export const donationSchema = Joi.object({
+  id: Joi.number().optional(),
+  full_name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  mobile: Joi.string().required().allow(""),
+  donation_amount: Joi.required().allow(""),
+  
+  aadhar_number: Joi.alternatives().conditional("pan_number", {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.required().messages({
+      "any.required": "Either Aadhar Number or PAN Number is required.",
+    }),
+  }),
+  
+  pan_number: Joi.alternatives().conditional("aadhar_number", {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.required().messages({
+      "any.required": "Either PAN Number or Aadhar Number is required.",
+    }),
+  }),
+  
+  aadhar_url: Joi.string().optional().allow(""),
+  pan_url: Joi.string().optional().allow(""),
+  address: Joi.string().optional().allow(""),
+  user_id: Joi.number().optional(),
+  deleted: Joi.number().valid(0, 1).default(0),
+}).options({ allowUnknown: true });
+
+export const ourInspirationSchema = Joi.object({
+  id: Joi.number().optional(),
+  full_name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  mobile: Joi.string().required().allow(""),
+  donation_amount: Joi.required().allow(""),
+  
+  aadhar_number: Joi.alternatives().conditional("pan_number", {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.required().messages({
+      "any.required": "Either Aadhar Number or PAN Number is required.",
+    }),
+  }),
+  
+  pan_number: Joi.alternatives().conditional("aadhar_number", {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.required().messages({
+      "any.required": "Either PAN Number or Aadhar Number is required.",
+    }),
+  }),
+  
+  aadhar_url: Joi.string().optional().allow(""),
+  pan_url: Joi.string().optional().allow(""),
+  address: Joi.string().optional().allow(""),
+  user_id: Joi.number().optional(),
+  deleted: Joi.number().valid(0, 1).default(0),
+}).options({ allowUnknown: true });
+
+export const bannerSectionSchema = Joi.object({
+  id: Joi.number().optional(),
+  full_name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  mobile: Joi.string().required().allow(""),
+  donation_amount: Joi.required().allow(""),
+  
+  aadhar_number: Joi.alternatives().conditional("pan_number", {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.required().messages({
+      "any.required": "Either Aadhar Number or PAN Number is required.",
+    }),
+  }),
+  
+  pan_number: Joi.alternatives().conditional("aadhar_number", {
+    is: Joi.exist(),
+    then: Joi.optional(),
+    otherwise: Joi.required().messages({
+      "any.required": "Either PAN Number or Aadhar Number is required.",
+    }),
+  }),
+  
+  aadhar_url: Joi.string().optional().allow(""),
+  pan_url: Joi.string().optional().allow(""),
+  address: Joi.string().optional().allow(""),
+  user_id: Joi.number().optional(),
+  deleted: Joi.number().valid(0, 1).default(0),
 }).options({ allowUnknown: true });
