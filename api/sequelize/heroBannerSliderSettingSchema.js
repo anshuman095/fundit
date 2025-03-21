@@ -23,7 +23,7 @@ const HeroBannerSliderSettings = sequelize.define(
       comment: "Duration of the transition",
     },
     banner_height: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.TEXT("long"),
       allowNull: true,
       comment: "Height of the banner",
     },

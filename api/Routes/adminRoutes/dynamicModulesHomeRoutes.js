@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createUpdateDonationPage, getDonationPage } from "../../Controller/donationPageController.js";
+import { createUpdateDynamicModulesHome, getDynamicModulesData, getDynamicModulesHome, updateDynamicModulesSequence } from "../../Controller/dynamicModulesHomeController.js";
 import { validate } from "../../helper/general.js";
 // import { LanguageCultureSchema } from "../../helper/validations.js";
 
-const donationPage = Router();
+const dynamicModulesHome = Router();
 
 /**
  * @swagger
- * /api/donationPage/create-update-donation-page:
+ * /api/dynamicModulesHome/create-update-dynamic-modules-home:
  *   post:
- *     summary: Create or update the Donation Page sections
- *     tags: [DonationPage]
+ *     summary: Create or update the Dynamic Modules Home sections
+ *     tags: [Dynamic Modules Home]
  *     requestBody:
  *       required: true
  *       content:
@@ -20,16 +20,12 @@ const donationPage = Router();
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID of the Donation Page entry (for updates)
- *               sections:
- *                 type: json
- *                 description: Array of sections with title, description, and image URL (as JSON string)
- *                 example: '[{"title": "DonationPage 1", "description": "Description of DonationPage 1"}, {"title": "DonationPage 2", "description": "Description of DonationPage 2"}]'
+ *                 description: ID of the Dynamic Modules Home entry (for updates)
  *             required:
- *               - sections
+ *               - tables
  *     responses:
  *       200:
- *         description: Donation Page entries processed successfully
+ *         description: Dynamic Modules Home entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -40,9 +36,9 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Dynamic Modules Home entries processed successfully.
  *       201:
- *         description: Donation Page entries processed successfully
+ *         description: Dynamic Modules Home entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -53,7 +49,7 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Dynamic Modules Home entries processed successfully.
  *       400:
  *         description: Bad request
  *         content:
@@ -69,20 +65,24 @@ const donationPage = Router();
  *                   example: Invalid request data.
  */
 
-donationPage.post("/create-update-donation-page", createUpdateDonationPage);
+dynamicModulesHome.post("/create-update-dynamic-modules-home", createUpdateDynamicModulesHome);
 
 /**
  * @swagger
- * /api/donationPage/get-donation-page:
+ * /api/dynamicModulesHome/get-dynamic-modules-home:
  *   get:
- *     summary: Get all DonationPage
- *     tags: [DonationPage]
+ *     summary: Get all Dynamic Modules Home
+ *     tags: [Dynamic Modules Home]
  *     responses:
  *       200:
- *         description: Donation Page retrieved successfully
+ *         description: Dynamic Modules Home retrieved successfully
  *       404:
- *         description: Donation Page not found
+ *         description: Dynamic Modules Home not found
  */
-donationPage.get("/get-donation-page/:id?", getDonationPage);
+dynamicModulesHome.get("/get-dynamic-modules-home/:id?", getDynamicModulesHome);
 
-export default donationPage;
+dynamicModulesHome.get("/get-dynamic-modules-data/:id?", getDynamicModulesData);
+
+dynamicModulesHome.post("/update-dynamic-modules-sequence", updateDynamicModulesSequence);
+
+export default dynamicModulesHome;

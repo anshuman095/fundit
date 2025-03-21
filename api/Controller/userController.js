@@ -67,10 +67,10 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
     } else {
       req.body.password = await hashPassword("12345678");
     }
-    if(!req.body.role_id) {
+    if (!req.body.role_id) {
       req.body.role_id = 2;
     }
-    if(!req.body.username) {
+    if (!req.body.username) {
       req.body.username = req.body.full_name;
     }
     if (req.files && req.files.image) {
@@ -93,7 +93,7 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
         WHERE user_id = ?
       `;
 
-      const donationValues = [ req.body.full_name, req.body.email, req.body.mobile, req.body.address, id];
+      const donationValues = [req.body.full_name, req.body.email, req.body.mobile, req.body.address, id];
       await db.query(updateDonationQuery, donationValues);
 
       const getQuery = `SELECT username, full_name, email, image, address, mobile FROM users WHERE id = ${id}`;
@@ -122,7 +122,7 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
         });
       }
     }
-    if(req.body.aadhar_number && req.body.pan_number) {
+    if (req.body.aadhar_number && req.body.pan_number) {
       const existingUser = await db.query(
         `SELECT * FROM users WHERE aadhar_number = '${req.body.aadhar_number}' 
         OR pan_number = '${req.body.pan_number}'`
@@ -298,11 +298,40 @@ export const getVolunteer = asyncHandler(async (req, res) => {
 export const getStaff = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const { search } = req.query;
     let query = `SELECT users.id, users.username, users.full_name, users.email, users.mobile, users.status, users.type, users.aadhar_number, users.pan_number, users.address, users.role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.deleted = 0 AND users.type = 'Staff' AND users.email <> '${Admin.email}'`;
-    let countQuery = `SELECT COUNT(*) AS total FROM users WHERE users.deleted = 0 AND users.type = 'Staff' AND users.email <> '${Admin.email}'`;
+    let countQuery = `SELECT COUNT(*) AS total FROM users JOIN roles ON users.role_id = roles.id
+      WHERE users.deleted = 0 AND users.type = 'Staff' AND users.email <> '${Admin.email}'`;
     if (id) {
       query += ` AND users.id = ${id}`;
       countQuery += ` AND users.id = ${id}`;
+    }
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+
+      let statusFilter = "";
+      if (lowerSearch === "active") {
+        statusFilter = "users.status = 1";
+      } else if (["non-active", "non active", "nonactive"].includes(lowerSearch)) {
+        statusFilter = "users.status = 0";
+      }
+
+      let searchConditions  = `
+        LOWER(users.full_name) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.email) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.mobile) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.aadhar_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.pan_number) LIKE '%${lowerSearch}%' OR 
+        LOWER(users.address) LIKE '%${lowerSearch}%' OR
+        LOWER(roles.name) LIKE '%${lowerSearch}%'
+      `;
+
+      if (statusFilter) {
+        searchConditions += ` OR ${statusFilter}`;
+      }
+      
+      query += ` AND (${searchConditions})`;
+      countQuery += ` AND (${searchConditions})`;
     }
     const users = await db.query(query);
     const totalCountResult = await db.query(countQuery);

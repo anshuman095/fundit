@@ -72,4 +72,5 @@ const HeroBannerSlides = sequelize.define(
   }
 );
 
+// console.log(await HeroBannerSlides.sync({ alter: true }))
 export default HeroBannerSlides;

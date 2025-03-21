@@ -278,7 +278,7 @@ export const queryFormSchema = Joi.object({
 }).options({ allowUnknown: true });
 export const contactFormSchema = Joi.object({
   id: Joi.number().optional(),
-  username: Joi.string().when("id", {
+  full_name: Joi.string().when("id", {
     is: Joi.exist(),
     then: Joi.optional(),
     otherwise: Joi.required(),

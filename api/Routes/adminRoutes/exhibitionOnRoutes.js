@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createUpdateDonationPage, getDonationPage } from "../../Controller/donationPageController.js";
+import { createUpdateExhibitionOn, getExhibitionOn } from "../../Controller/exhibitionOnController.js";
 import { validate } from "../../helper/general.js";
 // import { LanguageCultureSchema } from "../../helper/validations.js";
 
-const donationPage = Router();
+const exhibitionOn = Router();
 
 /**
  * @swagger
- * /api/donationPage/create-update-donation-page:
+ * /api/exhibitionOn/create-update-exhibition-on:
  *   post:
- *     summary: Create or update the Donation Page sections
- *     tags: [DonationPage]
+ *     summary: Create or update the ExhibitionOn sections
+ *     tags: [Exhibition On]
  *     requestBody:
  *       required: true
  *       content:
@@ -20,16 +20,16 @@ const donationPage = Router();
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID of the Donation Page entry (for updates)
+ *                 description: ID of the Exhibition On entry (for updates)
  *               sections:
  *                 type: json
  *                 description: Array of sections with title, description, and image URL (as JSON string)
- *                 example: '[{"title": "DonationPage 1", "description": "Description of DonationPage 1"}, {"title": "DonationPage 2", "description": "Description of DonationPage 2"}]'
+ *                 example: '[{"title": "ExhibitionOn 1", "description": "Description of ExhibitionOn 1"}, {"title": "ExhibitionOn 2", "description": "Description of ExhibitionOn 2"}]'
  *             required:
  *               - sections
  *     responses:
  *       200:
- *         description: Donation Page entries processed successfully
+ *         description: Exhibition On entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -40,9 +40,9 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Exhibition On entries processed successfully.
  *       201:
- *         description: Donation Page entries processed successfully
+ *         description: Exhibition On entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -53,7 +53,7 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Exhibition On entries processed successfully.
  *       400:
  *         description: Bad request
  *         content:
@@ -69,20 +69,20 @@ const donationPage = Router();
  *                   example: Invalid request data.
  */
 
-donationPage.post("/create-update-donation-page", createUpdateDonationPage);
+exhibitionOn.post("/create-update-exhibition-on", createUpdateExhibitionOn);
 
 /**
  * @swagger
- * /api/donationPage/get-donation-page:
+ * /api/exhibitionOn/get-exhibition-on:
  *   get:
- *     summary: Get all DonationPage
- *     tags: [DonationPage]
+ *     summary: Get all ExhibitionOn
+ *     tags: [ExhibitionOn]
  *     responses:
  *       200:
- *         description: Donation Page retrieved successfully
+ *         description: ExhibitionOn retrieved successfully
  *       404:
- *         description: Donation Page not found
+ *         description: ExhibitionOn not found
  */
-donationPage.get("/get-donation-page/:id?", getDonationPage);
+exhibitionOn.get("/get-exhibition-on/:id?", getExhibitionOn);
 
-export default donationPage;
+export default exhibitionOn;

@@ -146,7 +146,6 @@ export const getHeroBannerSlides = asyncHandler(async (req, res) => {
       });
     }
 
-    getHeroBannerSlides[0].slides = JSON.parse(getHeroBannerSlides[0]?.slides || []);
     return res.status(200).json({
       status: true,
       data: getHeroBannerSlides[0],

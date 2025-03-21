@@ -92,6 +92,7 @@ export const getDonation = asyncHandler(async (req, res) => {
         LOWER(donation.pan_number) LIKE '%${lowerSearch}%' OR 
         LOWER(donation.address) LIKE '%${lowerSearch}%' OR
         LOWER(CAST(donation.donation_amount AS CHAR)) LIKE '%${lowerSearch}%' OR
+        LOWER(donation.donation_cause) LIKE '%${lowerSearch}%' OR
         LOWER(donation.donation_type) LIKE '%${lowerSearch}%'
       )`);
     }
@@ -102,8 +103,9 @@ export const getDonation = asyncHandler(async (req, res) => {
     if (roleId !== 1) {
       selectFields = `id, full_name, email, 
                       CONCAT(SUBSTRING(mobile, 1, LENGTH(mobile) - 4), '****') AS mobile, 
-                      user_id, deleted, donation_type, anonymous, donation_amount`;
+                      user_id, deleted, donation_type, anonymous, donation_amount, donation_cause`;
     }
+    // CONCAT('******', SUBSTRING(mobile, -4)) AS mobile
 
     let query = `SELECT ${selectFields} FROM donation ${whereClause} LIMIT ${pageSize} OFFSET ${offset}`;
     let countQuery = `SELECT COUNT(*) AS total FROM donation ${whereClause}`;

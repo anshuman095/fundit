@@ -62,7 +62,7 @@ export const getContactForm = asyncHandler(async (req, res) => {
     }
     return res.status(200).json({
       status: true,
-      data: id ? results[0] : results,
+      data: id ? results : results,
     });
   } catch (error) {
     storeError(error);

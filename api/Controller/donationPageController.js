@@ -13,24 +13,52 @@ const db = makeDb();
 export const createUpdateDonationPage = asyncHandler(async (req, res) => {
     try {
         const { id } = req.body;
-        let libraries = [];
+        let sections = [];
+        let contribution_files = [];
 
-        if (req.body.libraries) {
-            libraries = JSON.parse(req.body.libraries);
+        if (req.body.sections) {
+            sections = JSON.parse(req.body.sections);
+        }
+
+        if (id) {
+            const [existingData] = await db.query(`SELECT contribution_files FROM donation_page WHERE id = ?`, [id]);
+            if (existingData?.contribution_files) {
+                try {
+                    contribution_files = existingData?.contribution_files;
+                } catch (error) {
+                    console.log('error: ', error);
+                }
+            }
         }
 
         if (req.files) {
-            for (let i = 0; i < libraries.length; i++) {
-                const donationPageAssetFile = req.files[`libraries[${i}][asset]`];
-                if (donationPageAssetFile && typeof donationPageAssetFile !== "string" && donationPageAssetFile !== null) {
-                    libraries[i].asset = await uploadFile("donation_page", donationPageAssetFile);
+            const contributionFileKeys = Object.keys(req.files).filter(key => key.startsWith("contribution_files["));
+            for (const key of contributionFileKeys) {
+                const match = key.match(/\[([0-9]+)\]\[media\]/);
+                if (!match) continue;
+        
+                const index = parseInt(match[1], 10); 
+                const donationPageContributionFile = req.files[key];
+        
+                if (donationPageContributionFile && typeof donationPageContributionFile !== "string" && donationPageContributionFile !== null) {
+                    if (!contribution_files[index]) {
+                        contribution_files[index] = {}; 
+                    }
+                    contribution_files[index].media = await uploadFile("donation_page", donationPageContributionFile);
                 }
+            }
+
+            if (req.files?.endowment_asset) {
+                const endowmentFile = req.files.endowment_asset;
+                req.body.endowment_asset = await uploadFile("donation_page", endowmentFile);
             }
         }
 
         const dataToSave = {
             id: id || undefined,
-            libraries: libraries ? JSON?.stringify(libraries) : [],
+            ...req.body,
+            contribution_files: contribution_files.length > 0 ? JSON.stringify(contribution_files) : "[]",
+            sections: sections ? JSON?.stringify(sections) : [],
         };
         let statusCode;
         if (dataToSave?.id) {
@@ -77,16 +105,16 @@ export const getDonationPage = asyncHandler(async (req, res) => {
         const filteredData = title
             ? getDonationPage.map(item => ({
                 ...item,
-                libraries: item?.libraries?.filter(DonationPage => 
-                    DonationPage?.title.toLowerCase().includes(title.toLowerCase())
-              )
-            })).filter(item => item?.libraries?.length > 0) 
-            : getDonationPage; 
+                libraries: item?.sections?.filter(section =>
+                    section?.title.toLowerCase().includes(title.toLowerCase())
+                )
+            })).filter(item => item?.sections?.length > 0)
+            : getDonationPage;
 
         if (filteredData.length === 0) {
             return res.status(404).json({
                 status: false,
-                message: "DonationPage Not Found",
+                message: "Donation Page Not Found",
             });
         }
 

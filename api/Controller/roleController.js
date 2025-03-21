@@ -10,7 +10,7 @@ export const createUpdateRole = asyncHandler(async (req, res) => {
     if (id) {
       // if name is updated then check if role already exists with different id or not
       const role = await tableRecord("name", req.body.name, "roles");
-      if (role.length > 0 && role[0].id !== id) {
+      if (role.length > 0 && role[0].id !== Number(id)) {
         return res.status(400).json({
           status: false,
           message: "Role already exists",
@@ -49,6 +49,7 @@ export const createUpdateRole = asyncHandler(async (req, res) => {
 export const getRoles = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const { search } = req.query;
     if (id) {
       const role = await tableRecord("id", id, "roles");
       return res.status(200).json({
@@ -56,7 +57,10 @@ export const getRoles = asyncHandler(async (req, res) => {
         data: role,
       });
     }
-    const getRolesQuery = `SELECT * FROM roles WHERE deleted = 0 AND name <> 'Admin'`;
+    let getRolesQuery = `SELECT * FROM roles WHERE deleted = 0 AND name <> 'Admin'`;
+    if (search) {
+      getRolesQuery += ` AND name LIKE '%${search}%'`;
+    }
     const getRoles = await db.query(getRolesQuery);
     return res.status(200).json({
       status: true,

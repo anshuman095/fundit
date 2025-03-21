@@ -11,7 +11,7 @@ const ContactForm = sequelize.define(
       primaryKey: true,
       comment: "Unique identifier for the contact form (auto-incremented)",
     },
-    username: {
+    full_name: {
       type: DataTypes.STRING(100),
       allowNull: true,
       comment: "Name of the user",
@@ -36,7 +36,10 @@ const ContactForm = sequelize.define(
       allowNull: true,
       comment: "Response of the user",
     },
-
+    subject: {
+      type: DataTypes.TEXT("long"),
+      allowNull: false,
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -52,4 +55,5 @@ const ContactForm = sequelize.define(
     comment: "Table to store information of contact_form",
   }
 );
+// console.log(await ContactForm.sync({ alter: true}))
 export default ContactForm;

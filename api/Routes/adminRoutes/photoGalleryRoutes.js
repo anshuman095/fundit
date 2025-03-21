@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createUpdateDonationPage, getDonationPage } from "../../Controller/donationPageController.js";
+import { createUpdatePhotoGallery, getPhotoGallery } from "../../Controller/photoGalleryController.js";
 import { validate } from "../../helper/general.js";
 // import { LanguageCultureSchema } from "../../helper/validations.js";
 
-const donationPage = Router();
+const photoGallery = Router();
 
 /**
  * @swagger
- * /api/donationPage/create-update-donation-page:
+ * /api/photoGallery/create-update-photo-gallery:
  *   post:
- *     summary: Create or update the Donation Page sections
- *     tags: [DonationPage]
+ *     summary: Create or update the Photo Gallery
+ *     tags: [Photo Gallery]
  *     requestBody:
  *       required: true
  *       content:
@@ -20,16 +20,16 @@ const donationPage = Router();
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID of the Donation Page entry (for updates)
- *               sections:
+ *                 description: ID of the Photo Gallery entry (for updates)
+ *               photo_gallery:
  *                 type: json
- *                 description: Array of sections with title, description, and image URL (as JSON string)
- *                 example: '[{"title": "DonationPage 1", "description": "Description of DonationPage 1"}, {"title": "DonationPage 2", "description": "Description of DonationPage 2"}]'
+ *                 description: Array of sections with image URL (as JSON string)
+ *                 example: '[{"media": "/photo_gallery/logo.png"}]'
  *             required:
- *               - sections
+ *               - photo_gallery
  *     responses:
  *       200:
- *         description: Donation Page entries processed successfully
+ *         description: Photo Gallery entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -40,9 +40,9 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Photo Gallery entries processed successfully.
  *       201:
- *         description: Donation Page entries processed successfully
+ *         description: Photo Gallery entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -53,7 +53,7 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Photo Gallery entries processed successfully.
  *       400:
  *         description: Bad request
  *         content:
@@ -69,20 +69,20 @@ const donationPage = Router();
  *                   example: Invalid request data.
  */
 
-donationPage.post("/create-update-donation-page", createUpdateDonationPage);
+photoGallery.post("/create-update-photo-gallery", createUpdatePhotoGallery);
 
 /**
  * @swagger
- * /api/donationPage/get-donation-page:
+ * /api/photoGallery/get-photo-gallery:
  *   get:
- *     summary: Get all DonationPage
- *     tags: [DonationPage]
+ *     summary: Get all PhotoGallery
+ *     tags: [PhotoGallery]
  *     responses:
  *       200:
- *         description: Donation Page retrieved successfully
+ *         description: Photo Gallery retrieved successfully
  *       404:
- *         description: Donation Page not found
+ *         description: Photo Gallery not found
  */
-donationPage.get("/get-donation-page/:id?", getDonationPage);
+photoGallery.get("/get-photo-gallery/:id?", getPhotoGallery);
 
-export default donationPage;
+export default photoGallery;

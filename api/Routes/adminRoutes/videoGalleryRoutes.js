@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createUpdateDonationPage, getDonationPage } from "../../Controller/donationPageController.js";
+import { createUpdateVideoGallery, getVideoGallery } from "../../Controller/videoGalleryController.js";
 import { validate } from "../../helper/general.js";
 // import { LanguageCultureSchema } from "../../helper/validations.js";
 
-const donationPage = Router();
+const videoGallery = Router();
 
 /**
  * @swagger
- * /api/donationPage/create-update-donation-page:
+ * /api/videoGallery/create-update-video-gallery:
  *   post:
- *     summary: Create or update the Donation Page sections
- *     tags: [DonationPage]
+ *     summary: Create or update the Video Gallery
+ *     tags: [Video Gallery]
  *     requestBody:
  *       required: true
  *       content:
@@ -20,16 +20,15 @@ const donationPage = Router();
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID of the Donation Page entry (for updates)
- *               sections:
+ *                 description: ID of the Video Gallery entry (for updates)
+ *               video_urls:
  *                 type: json
- *                 description: Array of sections with title, description, and image URL (as JSON string)
- *                 example: '[{"title": "DonationPage 1", "description": "Description of DonationPage 1"}, {"title": "DonationPage 2", "description": "Description of DonationPage 2"}]'
+ *                 description: Array of sections with video URL (as JSON string)
  *             required:
- *               - sections
+ *               - video_urls
  *     responses:
  *       200:
- *         description: Donation Page entries processed successfully
+ *         description: Video Gallery entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -40,9 +39,9 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Video Gallery entries processed successfully.
  *       201:
- *         description: Donation Page entries processed successfully
+ *         description: Video Gallery entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -53,7 +52,7 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Video Gallery entries processed successfully.
  *       400:
  *         description: Bad request
  *         content:
@@ -69,20 +68,20 @@ const donationPage = Router();
  *                   example: Invalid request data.
  */
 
-donationPage.post("/create-update-donation-page", createUpdateDonationPage);
+videoGallery.post("/create-update-video-gallery", createUpdateVideoGallery);
 
 /**
  * @swagger
- * /api/donationPage/get-donation-page:
+ * /api/VideoGallery/get-video-gallery:
  *   get:
- *     summary: Get all DonationPage
- *     tags: [DonationPage]
+ *     summary: Get all VideoGallery
+ *     tags: [VideoGallery]
  *     responses:
  *       200:
- *         description: Donation Page retrieved successfully
+ *         description: Video Gallery retrieved successfully
  *       404:
- *         description: Donation Page not found
+ *         description: Video Gallery not found
  */
-donationPage.get("/get-donation-page/:id?", getDonationPage);
+videoGallery.get("/get-video-gallery/:id?", getVideoGallery);
 
-export default donationPage;
+export default videoGallery;

@@ -51,6 +51,10 @@ const Donation = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        donation_cause: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         address: {
             type: DataTypes.TEXT("long"),
             allowNull: true,
@@ -74,6 +78,16 @@ const Donation = sequelize.define(
             allowNull: false,
             defaultValue: 0,
             comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+        },
+        created_at: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+        },
+        updated_at: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
         },
     },
     { tableName: "donation", timestamps: false, charset: "utf8mb4", collate: "utf8mb4_general_ci" }

@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createUpdateDonationPage, getDonationPage } from "../../Controller/donationPageController.js";
+import { createUpdateDonationCause, getDonationCause } from "../../Controller/donationCauseController.js";
 import { validate } from "../../helper/general.js";
 // import { LanguageCultureSchema } from "../../helper/validations.js";
 
-const donationPage = Router();
+const donationCause = Router();
 
 /**
  * @swagger
- * /api/donationPage/create-update-donation-page:
+ * /api/donationCause/create-update-donation-cause:
  *   post:
- *     summary: Create or update the Donation Page sections
- *     tags: [DonationPage]
+ *     summary: Create or update the Donation Cause sections
+ *     tags: [Donation Cause]
  *     requestBody:
  *       required: true
  *       content:
@@ -20,16 +20,12 @@ const donationPage = Router();
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID of the Donation Page entry (for updates)
- *               sections:
- *                 type: json
- *                 description: Array of sections with title, description, and image URL (as JSON string)
- *                 example: '[{"title": "DonationPage 1", "description": "Description of DonationPage 1"}, {"title": "DonationPage 2", "description": "Description of DonationPage 2"}]'
+ *                 description: ID of the Donation Cause entry (for updates)
  *             required:
  *               - sections
  *     responses:
  *       200:
- *         description: Donation Page entries processed successfully
+ *         description: Donation Cause entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -40,9 +36,9 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Donation Cause entries processed successfully.
  *       201:
- *         description: Donation Page entries processed successfully
+ *         description: Donation Cause entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -53,7 +49,7 @@ const donationPage = Router();
  *                   example: true
  *                 data:
  *                   type: json
- *                   example: Donation Page entries processed successfully.
+ *                   example: Donation Cause entries processed successfully.
  *       400:
  *         description: Bad request
  *         content:
@@ -69,20 +65,20 @@ const donationPage = Router();
  *                   example: Invalid request data.
  */
 
-donationPage.post("/create-update-donation-page", createUpdateDonationPage);
+donationCause.post("/create-update-donation-cause", createUpdateDonationCause);
 
 /**
  * @swagger
- * /api/donationPage/get-donation-page:
+ * /api/conationCause/get-donation-cause:
  *   get:
- *     summary: Get all DonationPage
- *     tags: [DonationPage]
+ *     summary: Get all Donation Cause
+ *     tags: [DonationCause]
  *     responses:
  *       200:
- *         description: Donation Page retrieved successfully
+ *         description: Donation Cause retrieved successfully
  *       404:
- *         description: Donation Page not found
+ *         description: Donation Cause not found
  */
-donationPage.get("/get-donation-page/:id?", getDonationPage);
+donationCause.get("/get-donation-cause/:id?", getDonationCause);
 
-export default donationPage;
+export default donationCause;
