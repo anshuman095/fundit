@@ -20,6 +20,7 @@ import bannerRoutes from "../adminRoutes/bannerRoutes.js";
 import ourTeamRoutes from "../adminRoutes/ourTeamRoutes.js";
 import fleetRoutes from "../adminRoutes/fleetRoutes.js";
 import moduleRoutes from "../adminRoutes/moduleRoutes.js";
+// import subscribeRoutes from "../adminRoutes/subscribeRoutes.js";
 const clientRouter = Router();
 
 clientRouter.use("/aboutUs", aboutUsRoutes);
@@ -42,5 +43,6 @@ clientRouter.use("/our-team", ourTeamRoutes);
 clientRouter.use("/fleet", fleetRoutes);
 clientRouter.use("/module", moduleRoutes);
 clientRouter.get("/admin_info", getAdminDetails);
+// clientRouter.get("/subscribe", subscribeRoutes);
 
 export default clientRouter;

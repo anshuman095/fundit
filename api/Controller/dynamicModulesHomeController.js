@@ -101,7 +101,7 @@ export const getDynamicModulesData = asyncHandler(async (req, res) => {
             dynamicData.push({
                 title: title,
                 sequence: sequence,
-                ...tableData?.[0]
+                data: tableData?.[0]
             });
         }
 

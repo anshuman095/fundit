@@ -33,7 +33,7 @@ app.use(session({ secret: "some secret", resave: false, saveUninitialized: true 
 
 app.get("/api/get-profile/:id", verifyToken, getProfile);
 
-// app.use(saveRedirectUri);
+app.use(saveRedirectUri);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
