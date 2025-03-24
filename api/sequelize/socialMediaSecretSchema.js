@@ -10,7 +10,7 @@ const SocialMediaSecrets = sequelize.define(
       autoIncrement: true,
     },
     type: {
-      type: DataTypes.ENUM("meta", "twitter", "linkedin", "google"),
+      type: DataTypes.ENUM("meta", "twitter", "linkedin", "google", "email", "razorpay"),
       allowNull: false,
     },
     client_id: {
@@ -53,6 +53,30 @@ const SocialMediaSecrets = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    email_host: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    email_port: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    email_user: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    email_password: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    razorpay_key_id : {
+      type: DataTypes.TEXT("long"),
+      allowNull: true,
+    },
+    razorpay_key_secret : {
+      type: DataTypes.TEXT("long"),
+      allowNull: true,
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -69,4 +93,5 @@ const SocialMediaSecrets = sequelize.define(
   }
 );
 
+// console.log(await SocialMediaSecrets.sync({ alter: true }));
 export default SocialMediaSecrets;

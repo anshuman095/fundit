@@ -10,7 +10,7 @@ import {
 } from "../../Controller/linkedInController.js";
 
 import dotenv from "dotenv";
-import { getRedirectUrl, storeError, validate } from "../../helper/general.js";
+import { getRedirectUrl, saveRedirectUri, storeError, validate } from "../../helper/general.js";
 import { checkAccessToken, verifyToken } from "../../helper/tokenVerify.js";
 import { getSecrets, saveSecrets } from "../../Controller/socialMediaSecretController.js";
 import { LINKEDIN, SOCIAL_MEDIA } from "../../helper/constants.js";
@@ -43,7 +43,7 @@ const getUrlWithQueryParams = (base, params) => {
   return `${base}?${query}`;
 };
 
-linkedInRoutes.post("/auth/linkedin", validate(socialMediaSecretSchema), async (req, res) => {
+linkedInRoutes.post("/auth/linkedin", validate(socialMediaSecretSchema), saveRedirectUri, async (req, res) => {
   try {
     const [secret] = await getSecrets(SOCIAL_MEDIA.LINKEDIN);
     const params = {

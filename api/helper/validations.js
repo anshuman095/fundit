@@ -365,7 +365,7 @@ export const moduleSchema = Joi.object({
 
 export const donationSchema = Joi.object({
   id: Joi.number().optional(),
-  full_name: Joi.string().required(),
+  // full_name: Joi.string().required(),
   email: Joi.string().email().required(),
   mobile: Joi.string().required().allow(""),
   donation_amount: Joi.required().allow(""),
@@ -389,7 +389,7 @@ export const donationSchema = Joi.object({
   aadhar_url: Joi.string().optional().allow(""),
   pan_url: Joi.string().optional().allow(""),
   address: Joi.string().optional().allow(""),
-  user_id: Joi.number().optional(),
+  // user_id: Joi.number().optional(),
   deleted: Joi.number().valid(0, 1).default(0),
 }).options({ allowUnknown: true });
 

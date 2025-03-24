@@ -73,6 +73,10 @@ const Donation = sequelize.define(
             type: DataTypes.BOOLEAN,
             defaultValue: false,
         },
+        donar_details: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
         deleted: {
             type: DataTypes.INTEGER,
             allowNull: false,

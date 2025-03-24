@@ -13,14 +13,14 @@ import {
   getRatings,
   getInsights,
 } from "../../Controller/facebookController.js";
-import { validate } from "../../helper/general.js";
+import { saveRedirectUri, validate } from "../../helper/general.js";
 import { postFbSchema, socialMediaSecretSchema } from "../../helper/validations.js";
 import { checkAccessToken } from "../../helper/tokenVerify.js";
 
 const facebookRoutes = Router();
 
 // Route to initiate Facebook login
-facebookRoutes.post("/auth/meta", validate(socialMediaSecretSchema), handleFacebookLogin);
+facebookRoutes.post("/auth/meta", validate(socialMediaSecretSchema), saveRedirectUri, handleFacebookLogin);
 
 // Route for Facebook OAuth callback (redirect URI)
 facebookRoutes.get("/auth/meta/callback", handleFacebookRedirect);

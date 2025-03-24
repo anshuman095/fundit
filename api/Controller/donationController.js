@@ -34,17 +34,23 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
         message: `Donation updated successfully`,
       });
     } else {
-      let userId = await checkUserExists(aadhar_number, pan_number);
-      if(userId === null) {
-        req.body.username = req.body.full_name;
-        req.body.password = await hashPassword("12345678");
-        req.body.role_id = 2;
-        req.body.type = "Donar";
-        const { query, values } = createQueryBuilder(User, req.body);
-        const user = await db.query(query, values); 
-        userId = user?.insertId
+      if(req.body.user_id != "") {
+        let query = `SELECT full_name FROM users WHERE id = '${req.body.user_id}'`;
+        const result = await db.query(query);
+        req.body.full_name = result[0]?.full_name;
+      } else {
+        let userId = await checkUserExists(aadhar_number, pan_number);
+        if (userId === null) {
+          req.body.username = req.body.full_name;
+          req.body.password = await hashPassword("12345678");
+          req.body.role_id = 2;
+          req.body.type = "Donar";
+          const { query, values } = createQueryBuilder(User, req.body);
+          const user = await db.query(query, values);
+          userId = user?.insertId
+        }
+        req.body.user_id = userId;
       }
-      req.body.user_id = userId;
       const { query, values } = createQueryBuilder(Donation, req.body);
       await db.query(query, values);
 
@@ -78,7 +84,7 @@ export const getDonation = asyncHandler(async (req, res) => {
     if (type) {
       whereConditions.push(`type = '${type}'`);
     }
-    
+
     if (req.params?.id) {
       whereConditions.push(`id = ${req.params.id}`);
     }
@@ -109,7 +115,7 @@ export const getDonation = asyncHandler(async (req, res) => {
 
     let query = `SELECT ${selectFields} FROM donation ${whereClause} LIMIT ${pageSize} OFFSET ${offset}`;
     let countQuery = `SELECT COUNT(*) AS total FROM donation ${whereClause}`;
-    
+
     const result = await db.query(query);
     const totalCountResult = await db.query(countQuery);
     const total = totalCountResult[0]?.total || 0;

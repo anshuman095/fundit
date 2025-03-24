@@ -1889,9 +1889,9 @@ export const saveRedirectUri = async (req, res, next) => {
     for (let key in SOCIAL_MEDIA) {
       const [secret] = await getSecrets(SOCIAL_MEDIA[key]);
 
-      if (secret?.valid_oauth_uri.split(`/${SOCIAL_MEDIA[key]}`)[0] === baseUrl) {
-        return next();
-      }
+      // if (secret?.valid_oauth_uri.split(`/${SOCIAL_MEDIA[key]}`)[0] === baseUrl) {
+      //   return next();
+      // }
       const valid_oauth_uri = getRedirectUrl(baseUrl, SOCIAL_MEDIA[key]);
       data.valid_oauth_uri = valid_oauth_uri;
       data.type = SOCIAL_MEDIA[key];

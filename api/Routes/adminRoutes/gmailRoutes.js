@@ -25,7 +25,7 @@ const gmailRoutes = Router();
  *   description: Operations related to gmail
  */
 
-gmailRoutes.post("/auth/google", validate(socialMediaSecretSchema), handleGoogleLogin);
+gmailRoutes.post("/auth/google", validate(socialMediaSecretSchema), saveRedirectUri, handleGoogleLogin);
 
 gmailRoutes.get("/auth/google/callback", handleGoogleCallback);
 

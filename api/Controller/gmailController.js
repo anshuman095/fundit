@@ -69,8 +69,8 @@ export const handleGoogleCallback = asyncHandler(async (req, res) => {
     const expires_at = moment().add(expiryTimeInSeconds, "seconds").format("YYYY-MM-DD HH:mm:ss");
 
     await saveSecrets({ access_token, refresh_token, expires_at }, secret.id);
-    res.json({ status: true });
-    // res.redirect(`${process.env.FRONTEND_URI}?tab=google`);
+    // res.json({ status: true });
+    res.redirect(`${process.env.FRONTEND_URI}?tab=google`);
   } catch (error) {
     storeError(error);
     console.error("Error during Google callback:", error);
