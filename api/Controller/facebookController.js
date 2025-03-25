@@ -132,6 +132,7 @@ export const createFacebookPost = asyncHandler(async (req, res, next) => {
     } else {
       response = await postContentOnFacebook(pageId, accessToken, req.body);
     }
+    const facebookPostId = response?.id;
 
     const query = `SELECT * FROM post WHERE media = ? AND content = ?`;
     const result = await db.query(query, [req.body.media, req.body.content]);
@@ -142,12 +143,16 @@ export const createFacebookPost = asyncHandler(async (req, res, next) => {
       type.push("Facebook");
       postData.type = JSON.stringify(type);
       postData.id = result[0].id;
+      let existingIds = JSON.parse(result[0].social_media_ids || "[]");
+      existingIds.push({ id: facebookPostId, type: "Facebook" });
+      postData.social_media_ids = JSON.stringify(existingIds);
       await saveMetaData(postData);
     } else {
       postData.type = JSON.stringify(["Facebook"]);
       postData.media = req.body.media;
       postData.content = req.body.content;
       postData.media_type = media_type;
+      postData.social_media_ids = JSON.stringify([{ id: facebookPostId, type: "Facebook" }]);
       await saveMetaData(postData);
     }
 
@@ -266,5 +271,56 @@ export const getInsights = asyncHandler(async (req, res) => {
     res.status(200).json({ status: true, data: response });
   } catch (error) {
     res.status(500).json({ status: false, error: "Server error" });
+  }
+});
+
+
+export const getFacebookPostInsights = asyncHandler(async (req, res) => {
+  try {
+    const postId = req.params.id; 
+    console.log('postId:=============================', postId);
+    const [secret] = await getSecrets(SOCIAL_MEDIA.FACEBOOK);
+    const accessToken = secret.page_access_token; 
+
+    if (!postId) {
+      return res.status(400).json({ success: false, message: "Post ID is required" });
+    }
+
+    // Define the fields to fetch
+    const fields = "likes.summary(true),comments.summary(true),shares,insights.metric(post_impressions)";
+    console.log('fields:==================================', fields);
+
+    // Fetch post insights using the Facebook Graph API
+    const response = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
+      params: {
+        fields,
+        access_token: accessToken,
+      },
+    });
+    console.log('response: ', response);
+
+    const data = response.data;
+
+    const totalLikes = data.likes?.summary?.total_count || 0;
+    const totalComments = data.comments?.summary?.total_count || 0;
+    const totalShares = data.shares?.count || 0;
+    const totalViews = data.insights?.data?.find((item) => item.name === "post_impressions")?.values[0]?.value || 0;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        postId,
+        totalLikes,
+        totalComments,
+        totalShares,
+        totalViews,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching Facebook post insights data:", error.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.response?.data?.error?.message || error.message,
+    });
   }
 });

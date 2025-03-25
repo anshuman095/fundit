@@ -124,6 +124,7 @@ export const createUpdateLinkedInPost = asyncHandler(async (req, res, next) => {
 
     //  Create Post on LinkedIn
     const postResponse = await createPost(access_token, linkedin_id, req.body, mediaUrn);
+    const linkedinPostId = postResponse?.data?.id;
 
     // Save post data to database if successful
     if (!postResponse?.data) {
@@ -135,6 +136,7 @@ export const createUpdateLinkedInPost = asyncHandler(async (req, res, next) => {
       media: req.body.media,
       media_type: media_type,
       content: req.body.content,
+      social_media_ids: JSON.stringify([{ id: linkedinPostId, type: "Linkedin" }]),
     };
     await saveMetaData(postData);
     // req.body.post_id = postResponse.data.id;

@@ -85,6 +85,8 @@ export const postInstagram = asyncHandler(async (req, res, next) => {
       result = await publishMediaContainer(accessToken, instagram_business_account_id, creationId);
     }
 
+    const instagramPostId = result?.id || creationId;
+
     const query = `SELECT * FROM post WHERE media = ? AND content = ?`;
     const queryResult = await db.query(query, [req.body.media, req.body.content]);
     console.log("queryResult: Instagram ", queryResult);
@@ -94,12 +96,19 @@ export const postInstagram = asyncHandler(async (req, res, next) => {
       type.push("Instagram");
       postData.type = JSON.stringify(type);
       postData.id = queryResult[0].id;
+      let existingIds;
+      existingIds = Array.isArray(queryResult[0].social_media_ids)
+      ? queryResult[0].social_media_ids
+      : JSON.parse(queryResult[0].social_media_ids || "[]");
+      existingIds.push({ id: instagramPostId, type: "Instagram" });
+      postData.social_media_ids = JSON.stringify(existingIds);
       await saveMetaData(postData);
     } else {
       postData.type = JSON.stringify(["Instagram"]);
       postData.media = uploadedPaths[0];
       postData.content = req.body.content;
       postData.media_type = media_type;
+      postData.social_media_ids = JSON.stringify([{ id: instagramPostId, type: "Instagram" }]);
       await saveMetaData(postData);
     }
     return next();

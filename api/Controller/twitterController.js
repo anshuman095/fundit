@@ -134,6 +134,7 @@ export const createTweet = asyncHandler(async (req, res) => {
 
     // const tweetResponse = await twitterClient.v1.tweet(textContent, {});
     const response = await twitterClient.v2.tweet(textContent || "", options);
+    const twitterPostId = response?.data?.id;
 
     const query = `SELECT * FROM post WHERE media = ? AND content = ?`;
     const result = await db.query(query, [req.body.media, req.body.content]);
@@ -144,12 +145,16 @@ export const createTweet = asyncHandler(async (req, res) => {
       type.push("Twitter");
       postData.type = JSON.stringify(type);
       postData.id = result[0].id;
+      let socialMediaIds = result[0].social_media_ids ? JSON.parse(result[0].social_media_ids) : [];
+      socialMediaIds.push({ id: twitterPostId, type: "Twitter" });
+      postData.social_media_ids = JSON.stringify(socialMediaIds);
       await saveMetaData(postData);
     } else {
       postData.type = JSON.stringify(["Twitter"]);
       postData.media = req.body.media;
       postData.content = req.body.content;
       postData.media_type = req.body.media_type;
+      postData.social_media_ids = JSON.stringify([{ id: twitterPostId, type: "Twitter" }]);
       await saveMetaData(postData);
     }
     return res.status(201).json({ status: true, data: response.data, message: "post created successfully" });

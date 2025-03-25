@@ -261,7 +261,7 @@ export const getEmailMessage = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       status: true,
-      data: { id: message.id, threadId: message.threadId, subject, from, to, date: localDate, body, attachments },
+      data: [{ id: message.id, threadId: message.threadId, subject, from, to, date: localDate, body, attachments }],
     });
   } catch (error) {
     storeError(error);

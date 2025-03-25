@@ -12,6 +12,7 @@ import {
   postVideoOnFacebook,
   getRatings,
   getInsights,
+  getFacebookPostInsights,
 } from "../../Controller/facebookController.js";
 import { saveRedirectUri, validate } from "../../helper/general.js";
 import { postFbSchema, socialMediaSecretSchema } from "../../helper/validations.js";
@@ -30,6 +31,7 @@ facebookRoutes.get("/get-accounts", getFacebookAccounts);
 facebookRoutes.get("/get-posts", getFacebookPosts);
 facebookRoutes.get("/get-rating", getRatings);
 facebookRoutes.get("/get-insights", getInsights);
+facebookRoutes.get("/get-total/:id", getFacebookPostInsights);
 facebookRoutes.post("/post-image", postImageOnFacebook);
 
 facebookRoutes.post("/upload-video", postVideoOnFacebook);

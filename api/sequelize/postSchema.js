@@ -16,6 +16,11 @@ const Post = sequelize.define(
       allowNull: true,
       comment: "Type of the post",
     },
+    social_media_ids: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      comment: "Ids of the social media post",
+    },
     content: {
       type: DataTypes.TEXT("long"),
       allowNull: true,
