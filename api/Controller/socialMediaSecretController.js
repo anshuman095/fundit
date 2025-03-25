@@ -107,7 +107,13 @@ export const deleteSocialMediaSecret = asyncHandler(async (req, res) => {
 
 export const getPosts = asyncHandler(async (req, res) => {
   try {
-    const query = `SELECT * FROM post order by id desc`;
+    let type = req.query.type;
+    let query = "SELECT * FROM post";
+    if (type) {
+      query += ` WHERE JSON_CONTAINS(type, '["${type}"]')`;
+    }
+
+    query += " ORDER BY id DESC";
     const getPosts = await db.query(query);
     if (getPosts.length == 0) {
       return res.status(404).json({
@@ -116,9 +122,6 @@ export const getPosts = asyncHandler(async (req, res) => {
       });
     }
 
-    for (const post of getPosts) {
-      post.type = JSON.parse(post.type);
-    }
     return res.status(200).json({
       status: true,
       data: getPosts,

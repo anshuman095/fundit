@@ -19,32 +19,15 @@ export const createUpdateDonationPage = asyncHandler(async (req, res) => {
         if (req.body.sections) {
             sections = JSON.parse(req.body.sections);
         }
-
-        if (id) {
-            const [existingData] = await db.query(`SELECT contribution_files FROM donation_page WHERE id = ?`, [id]);
-            if (existingData?.contribution_files) {
-                try {
-                    contribution_files = existingData?.contribution_files;
-                } catch (error) {
-                    console.log('error: ', error);
-                }
-            }
+        if (req.body.contribution_files) {
+            contribution_files = JSON.parse(req.body.contribution_files);
         }
 
         if (req.files) {
-            const contributionFileKeys = Object.keys(req.files).filter(key => key.startsWith("contribution_files["));
-            for (const key of contributionFileKeys) {
-                const match = key.match(/\[([0-9]+)\]\[media\]/);
-                if (!match) continue;
-        
-                const index = parseInt(match[1], 10); 
-                const donationPageContributionFile = req.files[key];
-        
-                if (donationPageContributionFile && typeof donationPageContributionFile !== "string" && donationPageContributionFile !== null) {
-                    if (!contribution_files[index]) {
-                        contribution_files[index] = {}; 
-                    }
-                    contribution_files[index].media = await uploadFile("donation_page", donationPageContributionFile);
+            for (let i = 0; i < contribution_files.length; i++) {
+                const contributionMediaFile = req.files[`contribution_files[${i}][media]`];
+                if (contributionMediaFile && typeof contributionMediaFile !== "string" && contributionMediaFile !== null) {
+                    contribution_files[i].media = await uploadFile("donation_page", contributionMediaFile);
                 }
             }
 

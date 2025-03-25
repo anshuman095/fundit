@@ -149,7 +149,7 @@ export const createTweet = asyncHandler(async (req, res) => {
       postData.type = JSON.stringify(["Twitter"]);
       postData.media = req.body.media;
       postData.content = req.body.content;
-      postData.media_type = media_type;
+      postData.media_type = req.body.media_type;
       await saveMetaData(postData);
     }
     return res.status(201).json({ status: true, data: response.data, message: "post created successfully" });

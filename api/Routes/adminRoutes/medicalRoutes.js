@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { createUpdateLanguageCulture, getLanguageCulture } from "../../Controller/languageCultureController.js";
+import { createUpdateMedical, getMedical } from "../../Controller/medicalController.js";
 import { validate } from "../../helper/general.js";
-// import { LanguageCultureSchema } from "../../helper/validations.js";
+// import { MedicalCenterSchema } from "../../helper/validations.js";
 
-const languageCultureRoutes = Router();
+const medicalRoutes = Router();
 
 /**
  * @swagger
- * /api/languageCulture/create-update-language-culture:
+ * /api/medical/create-update-medical:
  *   post:
- *     summary: Create or update the Language Culture sections
- *     tags: [Language Culture]
+ *     summary: Create or update the Medical sections
+ *     tags: [Medical]
  *     requestBody:
  *       required: true
  *       content:
@@ -20,16 +20,16 @@ const languageCultureRoutes = Router();
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID of the Language Culture entry (for updates)
+ *                 description: ID of the Medical entry (for updates)
  *               sections:
  *                 type: string
  *                 description: Array of sections with title, description, and image URL (as JSON string)
- *                 example: '[{"section": 1,"title": "About us 1", "description": "Description of About us 1"}, {"section": 2,"title": "About us 2", "description": "Description of About us 2"}]'
- *               sections[0].image:
+ *                 example: '[{"section": 1,"title": "Medical 1", "description": "Description of Medical 1"}, {"section": 2,"title": "Medical 2", "description": "Description of Medical 2"}]'
+ *               sections[0].slider:
  *                 type: string
  *                 format: binary
  *                 description: Image file for section 1
- *               sections[1].image:
+ *               sections[1].slider:
  *                 type: string
  *                 format: binary
  *                 description: Image file for section 2
@@ -37,7 +37,7 @@ const languageCultureRoutes = Router();
  *               - sections
  *     responses:
  *       200:
- *         description: Language Culture section updated successfully
+ *         description: Medical entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -48,9 +48,9 @@ const languageCultureRoutes = Router();
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: About us entries processed successfully.
+ *                   example: Medical entries processed successfully.
  *       201:
- *         description: Language Culture section created successfully
+ *         description: Medical entries processed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -59,9 +59,9 @@ const languageCultureRoutes = Router();
  *                 status:
  *                   type: boolean
  *                   example: true
- *                 message:
- *                   type: string
- *                   example: About us entries processed successfully.
+ *                 data:
+ *                   type: json
+ *                   example: Medical entries processed successfully.
  *       400:
  *         description: Bad request
  *         content:
@@ -72,25 +72,25 @@ const languageCultureRoutes = Router();
  *                 status:
  *                   type: boolean
  *                   example: false
- *                 message:
+ *                 data:
  *                   type: string
  *                   example: Invalid request data.
  */
 
-languageCultureRoutes.post("/create-update-language-culture", createUpdateLanguageCulture);
+medicalRoutes.post("/create-update-medical", createUpdateMedical);
 
 /**
  * @swagger
- * /api/languageCulture/get-language-culture:
+ * /api/medical/get-medical:
  *   get:
- *     summary: Get all About us
- *     tags: [Language Culture]
+ *     summary: Get all Medical
+ *     tags: [Medical]
  *     responses:
  *       200:
- *         description: Language Culture retrieved successfully
+ *         description: Medical retrieved successfully
  *       404:
- *         description: Language Culture not found
+ *         description: Medical not found
  */
-languageCultureRoutes.get("/get-language-culture/:id?", getLanguageCulture);
+medicalRoutes.get("/get-medical/:id?", getMedical);
 
-export default languageCultureRoutes;
+export default medicalRoutes;

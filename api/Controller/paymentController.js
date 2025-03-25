@@ -17,7 +17,7 @@ export const handlePaymentCredential = asyncHandler(async (req, res) => {
             const { query, values } = createQueryBuilder(SocialMediaSecret, req.body);
             await db.query(query, values);
         }
-        res.status(200).json({ status: true, data: "Razorpay credentials saved" });
+        res.status(200).json({ status: true, message: "Razorpay credentials saved" });
     } catch (error) {
         storeError(error);
         console.error("Error during Google login:", error);
