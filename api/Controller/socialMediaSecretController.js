@@ -108,12 +108,22 @@ export const deleteSocialMediaSecret = asyncHandler(async (req, res) => {
 export const getPosts = asyncHandler(async (req, res) => {
   try {
     let type = req.query.type;
-    let query = "SELECT * FROM post";
+    let page = parseInt(req.query.page) || 1;
+    let pageSize = parseInt(req.query.pageSize) || 10;
+    let offset = (page - 1) * pageSize;
+
+    let whereConditions = [];
     if (type) {
-      query += ` WHERE JSON_CONTAINS(type, '["${type}"]')`;
+      whereConditions.push(`JSON_CONTAINS(type, '["${type}"]')`);
     }
 
-    query += " ORDER BY id DESC";
+    let whereClause = whereConditions.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
+
+    let query = `SELECT * FROM post ${whereClause} ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+    let countQuery = `SELECT COUNT(*) AS total FROM post ${whereClause}`;
+    
+    const totalCountResult = await db.query(countQuery);
+    const total = totalCountResult[0]?.total || 0;
     const getPosts = await db.query(query);
     if (getPosts.length == 0) {
       return res.status(404).json({
@@ -125,6 +135,7 @@ export const getPosts = asyncHandler(async (req, res) => {
     return res.status(200).json({
       status: true,
       data: getPosts,
+      total: total,
     });
   } catch (error) {
     storeError(error);

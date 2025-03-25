@@ -90,7 +90,7 @@ export const postInstagram = asyncHandler(async (req, res, next) => {
     console.log("queryResult: Instagram ", queryResult);
     let postData = {};
     if (queryResult.length > 0) {
-      const type = JSON.parse(queryResult[0].type);
+      let type = typeof queryResult[0].type === "string" ? JSON.parse(queryResult[0].type) : queryResult[0].type;
       type.push("Instagram");
       postData.type = JSON.stringify(type);
       postData.id = queryResult[0].id;
