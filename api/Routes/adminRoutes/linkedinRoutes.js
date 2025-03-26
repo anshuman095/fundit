@@ -7,6 +7,7 @@ import {
   getLinkedInPosts,
   handleLinkedInCallback,
   getPosts,
+  getLinkedInPostInsights,
 } from "../../Controller/linkedInController.js";
 
 import dotenv from "dotenv";
@@ -182,5 +183,7 @@ linkedInRoutes
 linkedInRoutes.delete("/post/:id", checkAccessToken(SOCIAL_MEDIA.LINKEDIN), deleteLinkedInPost);
 
 linkedInRoutes.get("/get", checkAccessToken(SOCIAL_MEDIA.LINKEDIN), getPosts);
+
+linkedInRoutes.get("/get-total/:postId", checkAccessToken(SOCIAL_MEDIA.LINKEDIN), getLinkedInPostInsights);
 
 export default linkedInRoutes;

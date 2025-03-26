@@ -500,7 +500,7 @@ export const getDraft = asyncHandler(async (req, res, next) => {
 
       return res.status(200).json({
         status: true,
-        data: {
+        data: [{
           id: draftMessage.id,
           threadId: draftMessage.threadId,
           subject,
@@ -511,7 +511,7 @@ export const getDraft = asyncHandler(async (req, res, next) => {
           date: localDate,
           body,
           attachments,
-        },
+        }],
       });
     }
     let response = await gmail.users.drafts.list({

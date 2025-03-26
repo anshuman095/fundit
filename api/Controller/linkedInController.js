@@ -233,3 +233,43 @@ export const getPosts = asyncHandler(async (req, res) => {
     res.status(500).json({ status: false, error: error.response?.data || error.message });
   }
 });
+
+export const getLinkedInPostInsights = asyncHandler(async (req, res) => {
+  try {
+    const postId = req.params.postId; 
+
+    if (!postId) {
+      return res.status(400).json({ success: false, error: "Post ID is required." });
+    }
+
+    const [secret] = await getSecrets(SOCIAL_MEDIA.LINKEDIN);
+    const accessToken = secret.access_token;
+
+    if (!accessToken) {
+      return res.status(500).json({ success: false, error: "LinkedIn access token is missing." });
+    }
+
+    const url = `${LINKEDIN.API_URL}${LINKEDIN.LINKEDIN_UGC_ENDPOINT}/${postId}?projection=(id,statistics)`;
+    const headers = { Authorization: `Bearer ${accessToken}` };
+
+    const response = await axios.get(url, { headers });
+    const stats = response.data.statistics;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        postId,
+        totalLikes: stats?.numLikes || 0,
+        totalComments: stats?.numComments || 0,
+        totalShares: stats?.numShares || 0,
+        totalViews: stats?.impressions || 0,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching LinkedIn post insights data:", error.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data?.message || error.message,
+    });
+  }
+});

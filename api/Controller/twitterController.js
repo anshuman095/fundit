@@ -403,3 +403,51 @@ export const getBookmarks = asyncHandler(async (req, res) => {
     res.status(500).json({ status: false, error: error.data || error.message });
   }
 });
+
+export const getTwitterPostInsights = asyncHandler(async (req, res) => {
+  try {
+    const tweetId = req.params.tweetId;
+
+    if (!tweetId) {
+      return res.status(400).json({ success: false, error: "Tweet ID is required." });
+    }
+
+    const [secret] = await getSecrets(SOCIAL_MEDIA.TWITTER);
+    const { twitterClient } = await getClient();
+
+
+    const tweetResponse = await twitterClient.v2.singleTweet(tweetId, {
+      "tweet.fields": [
+        "public_metrics",
+        "author_id",
+        "created_at"
+      ].join(',')
+    });
+
+    const metrics = tweetResponse.data.public_metrics;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        postId: tweetId,
+        totalLikes: metrics?.like_count || 0,
+        totalComments: metrics?.reply_count || 0,
+        totalShares: metrics?.retweet_count || 0,
+        totalViews: metrics?.impression_count || 0,
+      },
+    });
+  } catch (error) {
+    if (error.code === 429) {
+      return res.status(429).json({
+        success: false,
+        error: "Rate limit exceeded. Please try again later.",
+        retryAfter: error.rateLimit?.reset ? new Date(error.rateLimit.reset * 1000).toISOString() : null,
+      });
+    }
+
+    return res.status(error.code).json({
+      success: false,
+      error: error.response?.data?.error || error.message,
+    });
+  }
+});

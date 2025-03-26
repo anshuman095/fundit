@@ -4,6 +4,7 @@ import {
   getCommentDetails,
   getCommentsOnMedia,
   getInstaAccountInsights,
+  getInstagramPostInsights,
   getInstaMediaInsights,
   getInstaMedias,
   getInstaProfile,
@@ -25,5 +26,6 @@ instagramRoutes.post("/reply-on-comment", replyToAComment);
 instagramRoutes.delete("/delete-comment/:commentId", deleteAComment);
 instagramRoutes.get("/get-comment-details/:commentId", getCommentDetails);
 instagramRoutes.get("/get-account-insights", getInstaAccountInsights);
+instagramRoutes.get("/get-total/:postId", getInstagramPostInsights);
 instagramRoutes.get("/get-media-insights/:mediaId", getInstaMediaInsights);
 export default instagramRoutes;

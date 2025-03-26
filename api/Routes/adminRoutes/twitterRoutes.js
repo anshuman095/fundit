@@ -11,6 +11,7 @@ import {
   getMe,
   getSingleUserById,
   getTimeline,
+  getTwitterPostInsights,
   getUsersByName,
   getUserTweets,
   handleCallback,
@@ -43,5 +44,6 @@ twitterRoutes.delete("/unfollow/:id", unfollow);
 twitterRoutes.post("/add-to-bookmark/:tweetId", addTweetToBookmark);
 twitterRoutes.delete("/remove-bookmark/:tweetId", removeTweetFromBookmark);
 twitterRoutes.get("/get-bookmarks", getBookmarks);
+twitterRoutes.get("/get-total/:tweetId", getTwitterPostInsights);
 
 export default twitterRoutes;

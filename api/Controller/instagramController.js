@@ -238,3 +238,41 @@ export const getInstaMediaInsights = asyncHandler(async (req, res) => {
     res.status(500).json({ status: false, error: error.response?.data?.error?.message || error.message });
   }
 });
+
+export const getInstagramPostInsights = asyncHandler(async (req, res) => {
+  try {
+    const postId = req.params.postId; 
+
+    if (!postId) {
+      return res.status(400).json({ success: false, error: "Post ID is required." });
+    }
+
+    const [secret] = await getSecrets(SOCIAL_MEDIA.META);
+
+    const accessToken = secret.access_token;
+    if (!accessToken) {
+      return res.status(500).json({ success: false, error: "Instagram access token is missing." });
+    }
+
+    const url = `${META.GRAPH_API}/${postId}?fields=like_count,comments_count,insights.metric(impressions,shares)&access_token=${accessToken}`;
+    const response = await axios.get(url);
+    const data = response.data;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        postId,
+        totalLikes: data?.like_count || 0,
+        totalComments: data?.comments_count || 0,
+        totalShares: data?.insights?.data?.find(m => m.name === "shares")?.values[0]?.value || 0,
+        totalViews: data?.insights?.data?.find(m => m.name === "impressions")?.values[0]?.value || 0,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching Instagram post insights data:", error.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.response?.data?.error?.message || error.message,
+    });
+  }
+});
