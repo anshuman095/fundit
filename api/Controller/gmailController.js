@@ -3,6 +3,7 @@ import moment from "moment";
 import { makeDb } from "../db-config.js";
 import fs from "fs";
 import path from "path";
+import mime from "mime-types";
 import {
   createMimeMessage,
   getEmailAttachments,
@@ -376,6 +377,30 @@ export const createUpdateDraft = asyncHandler(async (req, res, next) => {
         path: req.files[key].tempFilePath || req.files[key].name,
       }));
     }
+
+    const bodyAttachments = Object.keys(req.body).filter((key) =>
+      key.startsWith("attachment[")
+    );
+
+    if (bodyAttachments.length > 0) {
+      bodyAttachments.forEach((key) => {
+        const filePath = path.join(process.cwd(), "public", req.body[key]);
+
+        if (fs.existsSync(filePath)) {
+          const fileBuffer = fs.readFileSync(filePath);
+          const mimeType = mime.lookup(filePath) || "application/octet-stream";
+          attachments.push({
+            name: path.basename(req.body[key]), 
+            data: fileBuffer, 
+            mimeType: mimeType,
+            path: path.basename(req.body[key]),
+          });
+        } else {
+          console.warn(`File not found: ${filePath}`);
+        }
+      });
+    }
+
     // const from = "mohammad.tariq.sartia@gmail.com";
     const [secret] = await getSecrets(SOCIAL_MEDIA.GOOGLE);
     const from = secret.social_media_id;
@@ -385,9 +410,9 @@ export const createUpdateDraft = asyncHandler(async (req, res, next) => {
     attachments.forEach((attachment) => {
       messageParts.push({
         part: {
-          filename: attachment.name,
-          body: { data: attachment.data },
-          mimeType: attachment.mimeType,
+          filename: attachment?.name,
+          body: { data: attachment?.data },
+          mimeType: attachment?.mimeType,
         },
       });
     });
@@ -496,6 +521,7 @@ export const getDraft = asyncHandler(async (req, res, next) => {
         fs.writeFileSync(filePath, buffer);
 
         attachment.attachmentPath = `/gmail/${fileName}`;
+        attachment.file = `/gmail/${fileName}`;
       }
 
       return res.status(200).json({

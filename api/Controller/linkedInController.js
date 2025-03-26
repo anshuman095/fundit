@@ -257,13 +257,13 @@ export const getLinkedInPostInsights = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {
+      data: [{
         postId,
         totalLikes: stats?.numLikes || 0,
         totalComments: stats?.numComments || 0,
         totalShares: stats?.numShares || 0,
         totalViews: stats?.impressions || 0,
-      },
+      }],
     });
   } catch (error) {
     console.error("Error fetching LinkedIn post insights data:", error.response?.data || error.message);

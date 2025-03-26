@@ -260,13 +260,13 @@ export const getInstagramPostInsights = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {
+      data: [{
         postId,
         totalLikes: data?.like_count || 0,
         totalComments: data?.comments_count || 0,
         totalShares: data?.insights?.data?.find(m => m.name === "shares")?.values[0]?.value || 0,
         totalViews: data?.insights?.data?.find(m => m.name === "impressions")?.values[0]?.value || 0,
-      },
+      }],
     });
   } catch (error) {
     console.error("Error fetching Instagram post insights data:", error.response?.data || error.message);

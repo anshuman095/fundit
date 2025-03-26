@@ -145,3 +145,47 @@ export const getPosts = asyncHandler(async (req, res) => {
     });
   }
 });
+
+export const getPostById = asyncHandler(async (req, res) => {
+  try {
+    let type = req.query.type;
+    let page = parseInt(req.query.page) || 1;
+    let pageSize = parseInt(req.query.pageSize) || 10;
+    let offset = (page - 1) * pageSize;
+
+    let whereConditions = [];
+    if (type) {
+      whereConditions.push(`JSON_CONTAINS(type, '["${type}"]')`);
+    }
+    if (req.params?.id) {
+      whereConditions.push(`id = ${req.params.id}`);
+    }
+
+    let whereClause = whereConditions.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
+
+    let query = `SELECT * FROM post ${whereClause} ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+    let countQuery = `SELECT COUNT(*) AS total FROM post ${whereClause}`;
+    
+    const totalCountResult = await db.query(countQuery);
+    const total = totalCountResult[0]?.total || 0;
+    const getPosts = await db.query(query);
+    if (getPosts.length == 0) {
+      return res.status(404).json({
+        status: false,
+        message: "Posts Not Found",
+      });
+    }
+
+    return res.status(200).json({
+      status: true,
+      data: getPosts,
+      total: total,
+    });
+  } catch (error) {
+    storeError(error);
+    return res.status(500).json({
+      status: false,
+      message: error.message,
+    });
+  }
+});

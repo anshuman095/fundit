@@ -278,27 +278,24 @@ export const getInsights = asyncHandler(async (req, res) => {
 export const getFacebookPostInsights = asyncHandler(async (req, res) => {
   try {
     const postId = req.params.id; 
-    console.log('postId:=============================', postId);
-    const [secret] = await getSecrets(SOCIAL_MEDIA.FACEBOOK);
-    const accessToken = secret.page_access_token; 
+    const [secret] = await getSecrets(SOCIAL_MEDIA.META);
+    const accessToken = secret.access_token; 
 
     if (!postId) {
       return res.status(400).json({ success: false, message: "Post ID is required" });
     }
 
-    // Define the fields to fetch
-    const fields = "likes.summary(true),comments.summary(true),shares,insights.metric(post_impressions)";
-    console.log('fields:==================================', fields);
+    // const fields = "likes.summary(true),comments.summary(true),shares,insights.metric(post_impressions)";
+    const fields = "likes.summary(true),comments.summary(true),insights.metric(post_impressions)";
 
-    // Fetch post insights using the Facebook Graph API
-    const response = await axios.get(`https://graph.facebook.com/v19.0/${postId}`, {
+    const url = `${META.GRAPH_API}/${postId}`;
+    const response = await axios.get(url, {
       params: {
         fields,
         access_token: accessToken,
       },
     });
-    console.log('response: ', response);
-
+    
     const data = response.data;
 
     const totalLikes = data.likes?.summary?.total_count || 0;
@@ -308,13 +305,13 @@ export const getFacebookPostInsights = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {
+      data: [{
         postId,
         totalLikes,
         totalComments,
         totalShares,
         totalViews,
-      },
+      }],
     });
   } catch (error) {
     console.error("Error fetching Facebook post insights data:", error.response?.data || error.message);

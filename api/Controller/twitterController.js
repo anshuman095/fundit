@@ -428,13 +428,13 @@ export const getTwitterPostInsights = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: {
+      data: [{
         postId: tweetId,
         totalLikes: metrics?.like_count || 0,
         totalComments: metrics?.reply_count || 0,
         totalShares: metrics?.retweet_count || 0,
         totalViews: metrics?.impression_count || 0,
-      },
+      }],
     });
   } catch (error) {
     if (error.code === 429) {

@@ -25,6 +25,11 @@ export const createUpdateExhibition = asyncHandler(async (req, res) => {
                 if (sectionAssetFile && typeof sectionAssetFile !== "string" && sectionAssetFile !== null) {
                     sections[i].asset = await uploadFile("exhibition", sectionAssetFile);
                 }
+
+                const sectionBannerFile = req.files[`sections[${i}][banner_img]`];
+                if (sectionBannerFile && typeof sectionBannerFile !== "string" && sectionBannerFile !== null) {
+                    sections[i].banner_img = await uploadFile("exhibition", sectionBannerFile);
+                }
                 
                 if (sections[i].exhibition_slider && Array.isArray(sections[i].exhibition_slider)) {
                     for (let j = 0; j < sections[i].exhibition_slider.length; j++) {
@@ -54,7 +59,7 @@ export const createUpdateExhibition = asyncHandler(async (req, res) => {
 
         return res.status(statusCode).json({
             status: true,
-            message: "Our Inspiration entries processed successfully",
+            message: "Exhibition entries processed successfully",
         });
     } catch (error) {
         storeError(error);

@@ -21,6 +21,10 @@ const Role = sequelize.define(
       allowNull: true,
       comment: "Description of the role",
     },
+    permission: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -36,4 +40,5 @@ const Role = sequelize.define(
   }
 );
 
+// console.log(await Role.sync({ alter: true }));
 export default Role;
