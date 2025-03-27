@@ -18,7 +18,7 @@ export const createUpdateNewsMedia = asyncHandler(async (req, res) => {
         if (req.body.news_media) {
             news_media = JSON.parse(req.body.news_media);
         }
-        
+
         if (req.files) {
             for (let i = 0; i < news_media.length; i++) {
                 const newsMediaMediaFile = req.files[`news_media[${i}][media]`];
@@ -30,7 +30,7 @@ export const createUpdateNewsMedia = asyncHandler(async (req, res) => {
 
         const dataToSave = {
             id: id || undefined,
-            news_media: JSON.stringify(news_media) 
+            news_media: JSON.stringify(news_media)
         };
         let statusCode;
         if (dataToSave?.id) {
@@ -74,25 +74,18 @@ export const getNewsMedia = asyncHandler(async (req, res) => {
             });
         }
 
-        const filteredData = category
+        const filteredData = category && category !== 'All Categories'
             ? getNewsMedia.map(item => ({
                 ...item,
-                news_media: item.news_media.filter(news_media => 
+                news_media: item.news_media.filter(news_media =>
                     news_media.category.toLowerCase().includes(category.toLowerCase())
-              )
-            })).filter(item => item.news_media.length > 0) 
-            : getNewsMedia; 
-
-        if (filteredData.length === 0) {
-            return res.status(404).json({
-                status: false,
-                message: "News Media Not Found",
-            });
-        }
+                )
+            })).filter(item => item.news_media.length > 0)
+            : getNewsMedia;
 
         return res.status(200).json({
             status: true,
-            data: filteredData[0],
+            data: filteredData.length > 0 ? filteredData[0]: { news_media: [] },
         });
     } catch (error) {
         storeError(error);
