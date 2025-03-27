@@ -36,6 +36,11 @@ const Module = sequelize.define(
       allowNull: true,
       comment: "icon of the  module",
     },
+    active_image: {
+      type: DataTypes.TEXT("long"),
+      allowNull: true,
+      comment: "active image of the module",
+    },
     route: {
       type: DataTypes.TEXT("long"),
       allowNull: true,
@@ -51,4 +56,5 @@ const Module = sequelize.define(
   }
 );
 
+// console.log(await Module.sync({ alter: true }))
 export default Module;

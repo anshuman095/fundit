@@ -21,10 +21,6 @@ const Role = sequelize.define(
       allowNull: true,
       comment: "Description of the role",
     },
-    permission: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
