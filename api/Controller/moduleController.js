@@ -42,7 +42,6 @@ export const createUpdateModule = asyncHandler(async (req, res) => {
 export const getModules = asyncHandler(async (req, res) => {
   try {
     const roleId = req.user.role_id;
-    console.log("roleId: ", roleId);
     if (roleId == 1) {
       const excludedModules = ["Settings", "Roles & Permissions", "User Management"];
       const query = `SELECT * FROM module`;

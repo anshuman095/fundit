@@ -65,7 +65,7 @@ export const getScheduleQuote = asyncHandler(async (req, res) => {
         }
 
         let whereClause = whereConditions?.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
-        const query = `SELECT * FROM schedule_quote ${whereClause}`;
+        const query = `SELECT * FROM schedule_quote ${whereClause} LIMIT ${pageSize} OFFSET ${offset}`;
         let countQuery = `SELECT COUNT(*) AS total FROM schedule_quote ${whereClause}`;
 
         const getScheduleQuote = await db.query(query);

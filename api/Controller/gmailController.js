@@ -138,7 +138,9 @@ export const getGmailLabels = asyncHandler(async (req, res) => {
 
 export const getAllEmails = asyncHandler(async (req, res) => {
   try {
-    const { label, pageToken, search } = req.query;
+    const { label, search, page=1, pageSize=10 } = req.query;
+    const pageNum = parseInt(page, 10);
+    const maxResults = parseInt(pageSize, 10);
 
     const oauth2Client = await getOauthClient();
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
@@ -150,12 +152,24 @@ export const getAllEmails = asyncHandler(async (req, res) => {
     });
 
     const totalEmailCount = totalEmailCountResponse.data.resultSizeEstimate || 0;
+    let pageToken = null;
+    if (pageNum > 1) {
+      const previousPageResponse = await gmail.users.messages.list({
+        userId: "me",
+        labelIds: label ? [label.toUpperCase()] : [],
+        q: search ? `"${search}"` : "",
+        maxResults: (pageNum - 1) * maxResults, // Fetch emails till (pageNum - 1) * pageSize
+      });
+
+      // If the previous page exists, get the `nextPageToken`
+      pageToken = previousPageResponse.data.nextPageToken || null;
+    }
     const response = await gmail.users.messages.list({
       userId: "me",
       labelIds: label ? [label.toUpperCase()] : [],
-      // pageToken: pageToken || "",
       q: search ? `"${search}"` : "",
-      // maxResults: 10,
+      maxResults: maxResults,
+      pageToken: pageToken || "",
     });
 
     const messages = response.data.messages || [];

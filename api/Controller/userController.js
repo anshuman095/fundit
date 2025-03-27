@@ -231,6 +231,8 @@ export const getDonar = asyncHandler(async (req, res) => {
         LOWER(users.address) LIKE '%${lowerSearch}%'
       )`;
     }
+    query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+
     const users = await db.query(query);
     const totalCountResult = await db.query(countQuery);
     const total = totalCountResult[0]?.total || 0;
@@ -251,6 +253,9 @@ export const getDonar = asyncHandler(async (req, res) => {
 export const getVolunteer = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    let page = parseInt(req.query.page) || 1;
+    let pageSize = parseInt(req.query.pageSize) || 10;
+    let offset = (page - 1) * pageSize;
     const { search } = req.query;
     let query = `SELECT users.id, users.username, users.full_name, users.email, users.mobile, users.status, users.type, users.aadhar_number, users.pan_number, users.address, users.role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.deleted = 0 AND users.type = 'Volunteer' AND users.email <> '${Admin.email}'`;
     let countQuery = `SELECT COUNT(*) AS total FROM users WHERE users.deleted = 0 AND users.type = 'Volunteer' AND users.email <> '${Admin.email}'`;
@@ -278,6 +283,8 @@ export const getVolunteer = asyncHandler(async (req, res) => {
         LOWER(users.address) LIKE '%${lowerSearch}%'
       )`;
     }
+    query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+
     const users = await db.query(query);
     const totalCountResult = await db.query(countQuery);
     const total = totalCountResult[0]?.total || 0;
@@ -298,6 +305,9 @@ export const getVolunteer = asyncHandler(async (req, res) => {
 export const getStaff = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    let page = parseInt(req.query.page) || 1;
+    let pageSize = parseInt(req.query.pageSize) || 10;
+    let offset = (page - 1) * pageSize;
     const { search } = req.query;
     let query = `SELECT users.id, users.username, users.full_name, users.email, users.mobile, users.status, users.type, users.aadhar_number, users.pan_number, users.address, users.role_id, roles.name as role_name FROM users JOIN roles ON users.role_id = roles.id WHERE users.deleted = 0 AND users.type = 'Staff' AND users.email <> '${Admin.email}'`;
     let countQuery = `SELECT COUNT(*) AS total FROM users JOIN roles ON users.role_id = roles.id
@@ -333,6 +343,8 @@ export const getStaff = asyncHandler(async (req, res) => {
       query += ` AND (${searchConditions})`;
       countQuery += ` AND (${searchConditions})`;
     }
+    query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+    
     const users = await db.query(query);
     const totalCountResult = await db.query(countQuery);
     const total = totalCountResult[0]?.total || 0;

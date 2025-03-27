@@ -60,7 +60,7 @@ export const getSubscribe = asyncHandler(async (req, res) => {
             whereConditions.push(`id = ${req.params.id}`);
         }
         let whereClause = whereConditions?.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
-        const getSubscribeQuery = `SELECT * FROM subscribe ${whereClause}`;
+        const getSubscribeQuery = `SELECT * FROM subscribe ${whereClause} LIMIT ${pageSize} OFFSET ${offset}`;
         let countQuery = `SELECT COUNT(*) AS total FROM subscribe ${whereClause}`;
         
         const getSubscribe = await db.query(getSubscribeQuery);
