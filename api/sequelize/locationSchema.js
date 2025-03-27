@@ -40,12 +40,12 @@ const Locations = sequelize.define(
     //   allowNull: true,
     //   comment: "Support contact number for the location",
     // },
-    // deleted: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   defaultValue: 0,
-    //   comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
-    // },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "locations",
@@ -56,4 +56,5 @@ const Locations = sequelize.define(
   }
 );
 
+// console.log(await Locations.sync({ alter: true }));
 export default Locations;

@@ -32,12 +32,12 @@ const AboutUs = sequelize.define(
     //   comment: "Description of the about us entry",
     // },
 
-    // deleted: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   defaultValue: 0,
-    //   comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
-    // },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "about_us",
@@ -48,4 +48,5 @@ const AboutUs = sequelize.define(
   }
 );
 
+// console.log(await AboutUs.sync({ alter: true }));
 export default AboutUs;

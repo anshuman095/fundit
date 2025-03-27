@@ -51,6 +51,12 @@ const HeroBannerSliderSettings = sequelize.define(
       defaultValue: "Yes",
       comment: "Whether pagination dots are enabled",
     },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "hero_banner_slider_settings",
@@ -61,4 +67,5 @@ const HeroBannerSliderSettings = sequelize.define(
   }
 );
 
+// console.log(await HeroBannerSliderSettings.sync({ alter: true }));
 export default HeroBannerSliderSettings;

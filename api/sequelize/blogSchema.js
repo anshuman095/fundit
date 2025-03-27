@@ -104,6 +104,12 @@ const Blog = sequelize.define(
       defaultValue: 1,
       comment: "Status of the blog (1 for active, 0 for inactive)",
     },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "blog",
@@ -113,4 +119,6 @@ const Blog = sequelize.define(
     comment: "Table to store information of blog",
   }
 );
+
+// console.log(await Blog.sync({ alter: true }));
 export default Blog;

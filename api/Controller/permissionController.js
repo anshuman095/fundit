@@ -18,8 +18,7 @@ export const getPermissions = asyncHandler(async (req, res) => {
 });
 
 export const setPermission = asyncHandler(async (req, res) => {
-  const { roleId } = req.params;
-  console.log("roleId: ", roleId);
+  const { id: roleId } = req.body;
   const { permissions } = req.body;
   // console.log("permissions: ", permissions);
 

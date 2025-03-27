@@ -48,7 +48,7 @@ const Permission = sequelize.define(
       defaultValue: 0,
       comment: "update permission",
     },
-    delete: {
+    deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
@@ -64,4 +64,5 @@ const Permission = sequelize.define(
   }
 );
 
+// console.log(await Permission.sync({ alter: true }));
 export default Permission;

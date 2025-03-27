@@ -46,6 +46,12 @@ const Module = sequelize.define(
       allowNull: true,
       comment: "route of the  module",
     },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "module",

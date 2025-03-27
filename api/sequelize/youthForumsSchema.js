@@ -15,6 +15,12 @@ const YouthForums = sequelize.define(
       type: DataTypes.JSON,
       allowNull: true,
     },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "youth_forums",

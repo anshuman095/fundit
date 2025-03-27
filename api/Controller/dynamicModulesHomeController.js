@@ -95,13 +95,13 @@ export const getDynamicModulesData = asyncHandler(async (req, res) => {
         for (const module of getDynamicModulesHome[0].tables) {
             const { title, tableName, sequence } = module;
             
-            const tableDataQuery = `SELECT * FROM ${tableName}`;
+            const tableDataQuery = `SELECT * FROM ${tableName} WHERE deleted = 0`;
             const tableData = await db.query(tableDataQuery);
 
             dynamicData.push({
                 title: title,
                 sequence: sequence,
-                data: tableData?.[0]
+                data: tableData
             });
         }
 

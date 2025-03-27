@@ -58,7 +58,7 @@ roleRoutes.post("/create-update-role", validate(roleSchema), verifyToken, checkP
  */
 roleRoutes.get("/get-roles/:id?", getRoles);
 roleRoutes.get("/get-permissions/:roleId", getPermissions);
-roleRoutes.post("/set-permissions/:roleId", setPermission);
+roleRoutes.post("/set-permissions", setPermission);
 
 /**
  * @swagger

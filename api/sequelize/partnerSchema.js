@@ -30,12 +30,12 @@ const Partner = sequelize.define(
     //   allowNull: true,
     //   comment: "URL of the partner's website",
     // },
-    // deleted: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   defaultValue: 0,
-    //   comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
-    // },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
     // unique_id: {
     //   type: DataTypes.STRING(100),
     //   allowNull: false,
@@ -50,4 +50,6 @@ const Partner = sequelize.define(
     comment: "Table to store information about partners",
   }
 );
+
+// console.log(await Partner.sync({ alter: true }));
 export default Partner;

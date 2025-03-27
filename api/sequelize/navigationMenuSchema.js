@@ -15,6 +15,12 @@ const NavigationMenu = sequelize.define(
       type: DataTypes.JSON,
       allowNull: false,
     },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "navigation_menu",
@@ -25,4 +31,5 @@ const NavigationMenu = sequelize.define(
   }
 );
 
+// console.log(await NavigationMenu.sync({ alter: true }));
 export default NavigationMenu;

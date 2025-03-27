@@ -15,6 +15,12 @@ const SectionManager = sequelize.define(
       type: DataTypes.JSON,
       allowNull: false,
     },
+    deleted: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
+    },
   },
   {
     tableName: "section_manager",
@@ -25,4 +31,5 @@ const SectionManager = sequelize.define(
   }
 );
 
+// console.log(await SectionManager.sync({ alter: true }));
 export default SectionManager;
