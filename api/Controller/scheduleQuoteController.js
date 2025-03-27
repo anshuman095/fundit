@@ -1,8 +1,10 @@
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
 import {
+  createNotification,
     createQueryBuilder,
     deleteRecord,
+    getAdminData,
     storeError,
     updateQueryBuilder,
     uploadFile,
@@ -31,6 +33,13 @@ export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
             statusCode = 201;
             const { query, values } = createQueryBuilder(ScheduleQuote, req.body);
             await db.query(query, values);
+            const admin = await getAdminData();
+            const data = {
+              user_id: admin?.id,
+              type: "Schedule Quote",
+              message: `A schedule quote has been created.`
+            }
+            await createNotification(data);
         }
 
         return res.status(statusCode).json({
@@ -91,6 +100,13 @@ export const deleteScheduleQuote = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const deleteScheduleQuoteQuery = await deleteRecord("schedule_quote", id);
     if (deleteScheduleQuoteQuery) {
+      const admin = await getAdminData();
+      const data = {
+        user_id: admin?.id,
+        type: "Schedule Quote",
+        message: `A schedule quote has been deleted.`
+      }
+      await createNotification(data);
       return res.status(200).json({
         status: true,
         message: "Schedule Quote deleted successfully",

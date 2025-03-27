@@ -148,6 +148,13 @@ export const deleteDonation = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const deleteDonationQuery = await deleteRecord("donation", id);
     if (deleteDonationQuery) {
+      const admin = await getAdminData();
+      const data = {
+        user_id: admin?.id,
+        type: "Donation",
+        message: `Donation form has been deleted.`
+      }
+      await createNotification(data);
       return res.status(200).json({
         status: true,
         message: "Donation form deleted successfully",
