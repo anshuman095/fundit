@@ -7,7 +7,7 @@ export const getPermissions = asyncHandler(async (req, res) => {
   const { roleId } = req.params;
   try {
     const hierarchy = await getRolePermission(roleId);
-    return res.status(200).json({ status: true, data: hierarchy });
+    return res.status(200).json({ status: true, data: [{ data: hierarchy }] });
   } catch (error) {
     storeError(error);
     return res.status(500).json({

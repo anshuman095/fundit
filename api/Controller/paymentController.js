@@ -112,6 +112,7 @@ export async function createPaymentData(data) {
     await Payment.create(data);
 }
 
+// Note-> Donation when to create is not done and also create notification
 export const verifyPayment = asyncHandler(async (req, res) => {
     try {
         const { order_id, payment_id, signature } = req.body;

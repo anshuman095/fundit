@@ -2,9 +2,11 @@ import ContactForm from "../sequelize/contactFormSchema.js";
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
 import {
+  createNotification,
   createQueryBuilder,
   deleteRecord,
   generateReplyEmail,
+  getAdminData,
   sendEmail,
   storeError,
   tableRecord,
@@ -31,6 +33,13 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
       });
     }
     const { query, values } = createQueryBuilder(ContactForm, req.body);
+    const admin = await getAdminData();
+    const data = {
+      user_id: admin?.id,
+      type: "Contact Form",
+      message: `${req.body.full_name} has submitted a contact form regarding ${req.body.subject}.`
+    }
+    await createNotification(data);
     await db.query(query, values);
     return res.status(201).json({
       status: true,

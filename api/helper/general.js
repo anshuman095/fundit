@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import Post from "../sequelize/postSchema.js";
 import { LINKEDIN, META, SOCIAL_MEDIA } from "./constants.js";
 import { getSecrets, saveSecrets } from "../Controller/socialMediaSecretController.js";
+import Notification from "../sequelize/notificationSchema.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const db = makeDb();
@@ -1930,4 +1931,34 @@ export const checkUserExists = async (aadhar_number, pan_number) => {
 
   const [result] = await db.query(query, values);
   return result?.id ? result.id : null;
+};
+
+export const getAdminData = async () => {
+  try {
+    const fetchUserQuery = `SELECT id, full_name, email, mobile, asset FROM users WHERE id = 1`;
+    const fetchDetail = await db.query(fetchUserQuery);
+    return fetchDetail[0];
+  } catch (error) {
+    storeError(error);
+    throw new Error("Admin not found");
+  }
+};
+
+export const createNotification = async (data) => {
+  try {
+    const { user_id, message } = data;
+    console.log('data:=======inside notification==========', data);
+
+    if (!user_id || !message) {
+      throw new Error("User ID, and message are required");
+    }
+
+    const { query, values } = createQueryBuilder(Notification, data);
+    await db.query(query, values);
+
+    return "Notification created successfully";
+  } catch (error) {
+    storeError(error);
+    throw new Error("Admin not found");
+  }
 };

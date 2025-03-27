@@ -1,10 +1,12 @@
 import asyncHandler from "express-async-handler";
 import {
   checkUserExists,
+  createNotification,
   createQueryBuilder,
   deleteRecord,
   generateDonationEmail,
   generateInvoice,
+  getAdminData,
   hashPassword,
   sendEmail,
   storeError,
@@ -58,6 +60,13 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
       const invoice = await generateInvoice(req.body);
       const email = req.body.email;
       await sendEmail("volthi@admin.com", email, "Donation Receipt", html, invoice);
+      const admin = await getAdminData();
+      const data = {
+        user_id: admin?.id,
+        type: "Donation",
+        message: `${req.body.full_name} has donated ${donation_amount}`,
+      }
+      await createNotification(data);
       return res.status(201).json({
         status: true,
         message: `Donation form submitted successfully`,

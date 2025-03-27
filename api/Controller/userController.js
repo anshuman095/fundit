@@ -1,8 +1,10 @@
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
 import {
+  createNotification,
   createQueryBuilder,
   deleteRecord,
+  getAdminData,
   hashPassword,
   storeError,
   tableRecord,
@@ -136,6 +138,13 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
     }
     const { query, values } = createQueryBuilder(User, req.body);
     await db.query(query, values);
+    const admin = await getAdminData();
+    const data = {
+      user_id: admin?.id,
+      type: `${type ? `${type}` : "User"}`,
+      message: `${req.body?.full_name} is added`,
+    }
+    await createNotification(data);
     return res.status(201).json({
       status: true,
       message: `${type ? `${type} created successfully` : "User created successfully"}`,
@@ -326,7 +335,7 @@ export const getStaff = asyncHandler(async (req, res) => {
         statusFilter = "users.status = 0";
       }
 
-      let searchConditions  = `
+      let searchConditions = `
         LOWER(users.full_name) LIKE '%${lowerSearch}%' OR 
         LOWER(users.email) LIKE '%${lowerSearch}%' OR 
         LOWER(users.mobile) LIKE '%${lowerSearch}%' OR 
@@ -339,12 +348,12 @@ export const getStaff = asyncHandler(async (req, res) => {
       if (statusFilter) {
         searchConditions += ` OR ${statusFilter}`;
       }
-      
+
       query += ` AND (${searchConditions})`;
       countQuery += ` AND (${searchConditions})`;
     }
     query += ` LIMIT ${pageSize} OFFSET ${offset}`;
-    
+
     const users = await db.query(query);
     const totalCountResult = await db.query(countQuery);
     const total = totalCountResult[0]?.total || 0;
