@@ -43,7 +43,7 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
     await db.query(query, values);
     return res.status(201).json({
       status: true,
-      message: "Contact form created successfully",
+      message: "Contact details sent successfully",
     });
   } catch (error) {
     storeError(error);
