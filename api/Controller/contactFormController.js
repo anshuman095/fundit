@@ -57,16 +57,23 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
 export const getContactForm = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    let where = "";
+    let page = parseInt(req.query.page) || 1;
+    let pageSize = parseInt(req.query.pageSize) || 10;
+    let offset = (page - 1) * pageSize;
+    const { search } = req.query;
+    let where = "WHERE deleted = 0";
     if (id) {
       where = `AND id = ${id}`;
     }
-    const query = `SELECT * FROM contact_form WHERE deleted = 0 ${where}`;
+    if(search) {
+      where += ` AND (full_name LIKE '%${search}%' OR mobile LIKE '%${search}%')`;
+    }
+    const query = `SELECT * FROM contact_form ${where} LIMIT ${pageSize} OFFSET ${offset}`;
     const results = await db.query(query);
     if (results.length == 0) {
-      return res.status(404).json({
-        status: false,
-        message: "Contact form not found",
+      return res.status(200).json({
+        status: true,
+        message: [],
       });
     }
     return res.status(200).json({
