@@ -5,19 +5,29 @@ import { storeError, updateQueryBuilder } from "../helper/general.js";
 
 const db = makeDb();
 
-// Get Notifications for a User
 export const getNotification = asyncHandler(async (req, res) => {
   try {
     const userId = req.user?.id;
-    let page = parseInt(req.query.page) || 1;
-    let pageSize = parseInt(req.query.pageSize) || 10;
-    let offset = (page - 1) * pageSize;
-    
-    let query = `SELECT * FROM notification WHERE user_id = ? AND deleted = 0 ORDER BY created_at DESC LIMIT ? OFFSET ?`;
-    let countQuery = `SELECT COUNT(*) AS total FROM notification WHERE user_id = ? AND deleted = 0`;
+    let whereConditions = ["deleted = 0"];
+    if (userId) {
+      whereConditions.push(`user_id = ${userId}`);
+    }
 
-    const result = await db.query(query, [userId, pageSize, offset]);
-    const totalCountResult = await db.query(countQuery, [userId]);
+    let whereClause = whereConditions.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
+
+    let query = `SELECT * FROM notification ${whereClause} ORDER BY created_at DESC`;
+    let countQuery = `SELECT COUNT(*) AS total FROM notification ${whereClause}`;
+
+    let page = parseInt(req.query.page);
+    let pageSize = parseInt(req.query.pageSize);
+
+    if (!isNaN(page) && !isNaN(pageSize) && page > 0 && pageSize > 0) {
+      let offset = (page - 1) * pageSize;
+      query += ` LIMIT ${pageSize} OFFSET ${offset}`;
+    }
+
+    const result = await db.query(query);
+    const totalCountResult = await db.query(countQuery);
     const total = totalCountResult[0]?.total || 0;
 
     return res.status(200).json({
