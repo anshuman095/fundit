@@ -73,7 +73,7 @@ export const markNotificationAsRead = asyncHandler(async (req, res) => {
     storeError(error);
     return res.status(500).json({
       status: false,
-      message: error.message,
+      error: error.message,
     });
   }
 });
@@ -81,8 +81,8 @@ export const markNotificationAsRead = asyncHandler(async (req, res) => {
 export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
   try {
     const userId = req.user?.id;
-    let query = `UPDATE notification SET status = 'read' WHERE user_id = ? AND status = 'unread'`;
-    await db.query(query, [userId]);
+    let query = `UPDATE notification SET status = 'read' WHERE user_id = ${userId} AND status = 'unread'`;
+    await db.query(query);
 
     return res.status(200).json({
       status: true,
@@ -92,7 +92,7 @@ export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
     storeError(error);
     return res.status(500).json({
       status: false,
-      message: error.message,
+      error: error.message,
     });
   }
 });
