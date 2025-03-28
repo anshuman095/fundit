@@ -6,7 +6,7 @@ import { storeError, updateQueryBuilder } from "../helper/general.js";
 const db = makeDb();
 
 // Get Notifications for a User
-export const getNotifications = asyncHandler(async (req, res) => {
+export const getNotification = asyncHandler(async (req, res) => {
   try {
     const userId = req.user?.id;
     let page = parseInt(req.query.page) || 1;
