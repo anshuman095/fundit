@@ -87,6 +87,16 @@ const User = sequelize.define(
       allowNull: true,
       comment: "Pan number of the user",
     },
+    aadhar_url: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      comment: "Image of the aadhar",
+    },
+    pan_url: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      comment: "Image of the pan",
+    },
     type: {
       type: DataTypes.STRING,
       allowNull: true,

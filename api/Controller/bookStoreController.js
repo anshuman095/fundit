@@ -21,11 +21,20 @@ export const createUpdateBookStore = asyncHandler(async (req, res) => {
 
         if (req.files) {
             for (let i = 0; i < sections.length; i++) {
-                const sectionAssetFile = req.files[`sections[${i}][asset]`];
-                if (sectionAssetFile && typeof sectionAssetFile !== "string" && sectionAssetFile !== null) {
-                    sections[i].asset = await uploadFile("book_store", sectionAssetFile);
-                }
+                // const sectionAssetFile = req.files[`sections[${i}][asset]`];
+                // if (sectionAssetFile && typeof sectionAssetFile !== "string" && sectionAssetFile !== null) {
+                //     sections[i].asset = await uploadFile("book_store", sectionAssetFile);
+                // }
                 
+                if (sections[i].sub_section && Array.isArray(sections[i].sub_section)) {
+                    for (let j = 0; j < sections[i].sub_section.length; j++) {
+                        const subSectionMediaFile = req.files[`sections[${i}][sub_section][${j}][asset]`];
+                        if (subSectionMediaFile && typeof subSectionMediaFile !== "string" && subSectionMediaFile !== null) {
+                            sections[i].sub_section[j].asset = await uploadFile("book_store", subSectionMediaFile);
+                        }
+                    }
+                }
+
                 if (sections[i].book_store && Array.isArray(sections[i].book_store)) {
                     for (let j = 0; j < sections[i].book_store.length; j++) {
                         const sliderMediaFile = req.files[`sections[${i}][book_store][${j}][media]`];

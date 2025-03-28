@@ -1947,7 +1947,6 @@ export const getAdminData = async () => {
 export const createNotification = async (data) => {
   try {
     const { user_id, message } = data;
-    console.log('data:=======inside notification==========', data);
 
     if (!user_id || !message) {
       throw new Error("User ID, and message are required");

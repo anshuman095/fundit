@@ -46,6 +46,11 @@ const Module = sequelize.define(
       allowNull: true,
       comment: "route of the  module",
     },
+    type: {
+      type: DataTypes.ENUM("Module", "Tab"),
+      allowNull: true,
+      defaultValue: "Module",
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -184,6 +184,13 @@ export const deleteUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const deleteUser = await deleteRecord("users", id);
     if (deleteUser) {
+      const admin = await getAdminData();
+      const data = {
+        user_id: admin?.id,
+        type: "User",
+        message: `User has been deleted.`
+      }
+      await createNotification(data);
       return res.status(200).json({
         status: true,
         message: "User deleted successfully",

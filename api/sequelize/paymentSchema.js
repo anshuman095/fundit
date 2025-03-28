@@ -46,6 +46,10 @@ const Payment = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        donation_cause: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         deleted: {
             type: DataTypes.INTEGER,
             allowNull: false,
