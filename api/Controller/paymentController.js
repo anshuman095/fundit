@@ -187,6 +187,6 @@ export const verifyPayment = asyncHandler(async (req, res) => {
         return res.status(200).json({ status: true, message: "Payment verified successfully" });
     } catch (error) {
         storeError(error);
-        res.status(500).json({ error: error });
+        res.status(500).json({ status: false, error: error });
     }
 });
