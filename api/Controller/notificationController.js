@@ -44,12 +44,27 @@ export const getNotification = asyncHandler(async (req, res) => {
   }
 });
 
-// Mark Notification as Read
 export const markNotificationAsRead = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const { query, values } = updateQueryBuilder(Notification, { status: "read" }, `id = ${id}`);
-    await db.query(query, values);
+    const checkQuery = `SELECT status FROM notification WHERE id = '${id}'`;
+    const checkResult = await db.query(checkQuery);
+    if (checkResult.length === 0) {
+      return res.status(404).json({
+        status: false,
+        error: "Notification not found",
+      });
+    }
+
+    if (checkResult[0].status === 'read') {
+      return res.status(400).json({
+        status: false,
+        error: "Notification already marked as read",
+      });
+    }
+
+    const updateNotificationQuery = `UPDATE notification SET status = 'read' WHERE id = '${id}'`;
+    await db.query(updateNotificationQuery);
 
     return res.status(200).json({
       status: true,
@@ -64,7 +79,6 @@ export const markNotificationAsRead = asyncHandler(async (req, res) => {
   }
 });
 
-// Mark All Notifications as Read
 export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -84,7 +98,6 @@ export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
   }
 });
 
-// Delete Notification
 export const deleteNotification = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
