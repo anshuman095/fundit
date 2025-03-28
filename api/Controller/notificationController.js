@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
-import Notification from "../sequelize/notificationSchema.js";
-import { storeError, updateQueryBuilder } from "../helper/general.js";
+import { deleteRecord, storeError } from "../helper/general.js";
 
 const db = makeDb();
 
@@ -101,13 +100,18 @@ export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
 export const deleteNotification = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    let query = `UPDATE notification SET deleted = 1 WHERE id = ?`;
-    await db.query(query, [id]);
-
-    return res.status(200).json({
-      status: true,
-      message: "Notification deleted successfully",
-    });
+    const deleteScheduleQuoteQuery = await deleteRecord("notification", id);
+    if (deleteScheduleQuoteQuery) {
+      return res.status(200).json({
+        status: true,
+        message: "Notification deleted successfully",
+      });
+    } else {
+      return res.status(404).json({
+        status: false,
+        message: "Notification not found",
+      });
+    }
   } catch (error) {
     storeError(error);
     return res.status(500).json({
@@ -116,5 +120,4 @@ export const deleteNotification = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
