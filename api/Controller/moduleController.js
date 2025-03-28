@@ -56,32 +56,20 @@ export const getModules = asyncHandler(async (req, res) => {
       // if (roleId != 1) {
       //   modules = modules.filter((module) => !excludedModules.includes(module.name));
       // }
-      const result = [];
 
-      const map = {};
-
-      modules.forEach((item) => {
-        item.route = JSON.parse(item.route);
-        if (item.parent_id === null) {
-          item.create = 1;
-          item.read = 1;
-          item.update = 1;
-          item.delete = 1;
-          result.push(item);
-          map[item.id] = item;
-        } else {
-          if (map[item.parent_id]) {
-            if (!map[item.parent_id].children) {
-              map[item.parent_id].children = [];
-            }
-            item.create = 1;
-            item.read = 1;
-            item.update = 1;
-            item.delete = 1;
-            map[item.parent_id].children.push(item);
-          }
-        }
-      });
+      const buildTree = (parentId) => {
+        return modules
+          .filter((module) => module.parent_id === parentId)
+          .map((module) => ({
+            ...module,
+            create: 1,
+            read: 1,
+            update: 1,
+            delete: 1,
+            children: buildTree(module.id), 
+          }));
+      };
+      const result = buildTree(null);
 
       return res.status(200).json({
         status: true,
