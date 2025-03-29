@@ -94,9 +94,29 @@ export const getDynamicModulesData = asyncHandler(async (req, res) => {
         const dynamicData = [];
         for (const module of getDynamicModulesHome[0].tables) {
             const { title, tableName, sequence } = module;
-            
-            const tableDataQuery = `SELECT * FROM ${tableName} WHERE deleted = 0`;
-            const tableData = await db.query(tableDataQuery);
+            let tableData;
+            if (tableName === 'post') {
+                const socialMediaTypes = ['Linkedin', 'Facebook', 'Instagram', 'Twitter'];
+                tableData = [];
+                
+                for (const type of socialMediaTypes) {
+                    const query = `
+                        SELECT * FROM post 
+                        WHERE JSON_CONTAINS(type, '"${type}"') 
+                        AND deleted = 0 
+                        ORDER BY id DESC 
+                        LIMIT 1
+                    `;
+                    const posts = await db.query(query);
+                    
+                    if (posts.length > 0) {
+                        tableData.push(posts[0]);
+                    }
+                }
+            } else {
+                const tableDataQuery = `SELECT * FROM ${tableName} WHERE deleted = 0`;
+                tableData = await db.query(tableDataQuery);
+            }
 
             dynamicData.push({
                 title: title,
