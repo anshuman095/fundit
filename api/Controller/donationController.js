@@ -55,7 +55,7 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
         req.body.user_id = userId;
       }
       const { query, values } = createQueryBuilder(Donation, req.body);
-      await db.query(query, values);
+      const result = await db.query(query, values);
 
       const html = generateDonationEmail(full_name, donation_amount);
       const invoice = await generateInvoice(req.body);
@@ -67,6 +67,7 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
         subject: "Donation",
         message: `${req.body.full_name} has donated ${donation_amount}`,
         redirect_url: "/donation-management/all-donation",
+        view_notify: result.insertId,
       }
       await createNotification(data, io);
       return res.status(201).json({
