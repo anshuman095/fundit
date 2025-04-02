@@ -38,7 +38,8 @@ export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
             const data = {
               user_id: admin?.id,
               subject: "Schedule Quote",
-              message: `A schedule quote has been created.`
+              message: `A schedule quote has been created.`,
+              redirect_url: "/others/schedule-quote",
             }
             await createNotification(data, io);
         }
@@ -106,7 +107,7 @@ export const deleteScheduleQuote = asyncHandler(async (req, res) => {
       const data = {
         user_id: admin?.id,
         subject: "Schedule Quote",
-        message: `A schedule quote has been deleted.`
+        message: `A schedule quote has been deleted.`,
       }
       await createNotification(data, io);
       return res.status(200).json({

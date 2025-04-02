@@ -144,6 +144,12 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
       user_id: admin?.id,
       subject: `${type ? `${type}` : "User"}`,
       message: `${req.body?.full_name} is added`,
+      redirect_url:
+        type === "Staff"
+          ? "/others/staff-management?tab=staff"
+          : type === "Donar"
+            ? "/donation-management/donars-and-volunteers?tab=donars"
+              : "/donation-management/donars-and-volunteers?tab=volunteers",
     }
     await createNotification(data, io);
     return res.status(201).json({

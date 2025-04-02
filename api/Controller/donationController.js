@@ -66,6 +66,7 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
         user_id: admin?.id,
         subject: "Donation",
         message: `${req.body.full_name} has donated ${donation_amount}`,
+        redirect_url: "/donation-management/all-donation",
       }
       await createNotification(data, io);
       return res.status(201).json({
@@ -154,7 +155,7 @@ export const deleteDonation = asyncHandler(async (req, res) => {
       const data = {
         user_id: admin?.id,
         subject: "Donation",
-        message: `Donation form has been deleted.`
+        message: `Donation form has been deleted.`,
       }
       await createNotification(data, io);
       return res.status(200).json({

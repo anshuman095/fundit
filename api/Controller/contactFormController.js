@@ -38,7 +38,8 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
     const data = {
       user_id: admin?.id,
       subject: "Contact Form",
-      message: `${req.body.full_name} has submitted a contact form regarding ${req.body.subject}.`
+      message: `${req.body.full_name} has submitted a contact form regarding ${req.body.subject}.`,
+      redirect_url: "/website-query",
     }
     await createNotification(data, io);
     await db.query(query, values);
