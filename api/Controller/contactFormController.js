@@ -65,8 +65,14 @@ export const getContactForm = asyncHandler(async (req, res) => {
     let page = parseInt(req.query.page) || 1;
     let pageSize = parseInt(req.query.pageSize) || 10;
     let offset = (page - 1) * pageSize;
-    const { search } = req.query;
+    const { search, filter } = req.query;
     let where = "WHERE deleted = 0";
+    if (id) {
+      where = `AND id = ${id}`;
+    }
+    if (filter) {
+      where = `AND id = ${filter}`;
+    }
     if (id) {
       where = `AND id = ${id}`;
     }
