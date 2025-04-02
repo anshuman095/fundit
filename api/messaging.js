@@ -49,7 +49,7 @@ const handleConnection = (io) => async (socket) => {
     });
 };
 
-const initializeSocket = (server) => {
+const initializeSocket = (server, app) => {
     try {
         const io = new Server(server, {
             cors: {
@@ -58,6 +58,8 @@ const initializeSocket = (server) => {
         });
 
         io.on("connection", handleConnection(io));
+        app.set("io", io);
+        global.io = io;
     } catch (error) {
         storeError(error);
     }
