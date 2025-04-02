@@ -1962,8 +1962,7 @@ export const createNotification = async (data, io) => {
     }
     return "Notification created successfully";
   } catch (error) {
-    console.log('error:--------------------', error);
     storeError(error);
-    throw new Error("Admin not found");
+    throw new Error(error);
   }
 };
