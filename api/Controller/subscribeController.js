@@ -82,7 +82,7 @@ export const getSubscribe = asyncHandler(async (req, res) => {
             )`);
         }
         let whereClause = whereConditions?.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
-        const getSubscribeQuery = `SELECT * FROM subscribe ${whereClause} LIMIT ${pageSize} OFFSET ${offset}`;
+        const getSubscribeQuery = `SELECT * FROM subscribe ${whereClause} ORDER BY created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
         let countQuery = `SELECT COUNT(*) AS total FROM subscribe ${whereClause}`;
 
         const getSubscribe = await db.query(getSubscribeQuery);
