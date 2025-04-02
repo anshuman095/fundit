@@ -17,10 +17,10 @@ const Notification = sequelize.define(
       allowNull: false,
       comment: "User ID who will receive the notification",
     },
-    type: {
+    subject: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      comment: "Notification type",
+      comment: "Notification subject",
     },
     message: {
       type: DataTypes.TEXT("long"),

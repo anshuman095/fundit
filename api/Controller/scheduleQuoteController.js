@@ -36,7 +36,7 @@ export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
             const admin = await getAdminData();
             const data = {
               user_id: admin?.id,
-              type: "Schedule Quote",
+              subject: "Schedule Quote",
               message: `A schedule quote has been created.`
             }
             await createNotification(data);
@@ -103,7 +103,7 @@ export const deleteScheduleQuote = asyncHandler(async (req, res) => {
       const admin = await getAdminData();
       const data = {
         user_id: admin?.id,
-        type: "Schedule Quote",
+        subject: "Schedule Quote",
         message: `A schedule quote has been deleted.`
       }
       await createNotification(data);

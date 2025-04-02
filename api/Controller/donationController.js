@@ -63,7 +63,7 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
       const admin = await getAdminData();
       const data = {
         user_id: admin?.id,
-        type: "Donation",
+        subject: "Donation",
         message: `${req.body.full_name} has donated ${donation_amount}`,
       }
       await createNotification(data);
@@ -151,7 +151,7 @@ export const deleteDonation = asyncHandler(async (req, res) => {
       const admin = await getAdminData();
       const data = {
         user_id: admin?.id,
-        type: "Donation",
+        subject: "Donation",
         message: `Donation form has been deleted.`
       }
       await createNotification(data);

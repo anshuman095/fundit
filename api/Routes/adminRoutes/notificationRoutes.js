@@ -25,7 +25,7 @@ const notificationRoutes = Router();
 
 notificationRoutes.get("/get-notification/:id?", verifyToken, getNotification);
 
-notificationRoutes.get("/mark-read/:id?", verifyToken, markNotificationAsRead);
+notificationRoutes.post("/mark-read/:id?", verifyToken, markNotificationAsRead);
 
 notificationRoutes.get("/mark-all-read", verifyToken, markAllNotificationsAsRead);
 

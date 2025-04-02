@@ -141,7 +141,7 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
     const admin = await getAdminData();
     const data = {
       user_id: admin?.id,
-      type: `${type ? `${type}` : "User"}`,
+      subject: `${type ? `${type}` : "User"}`,
       message: `${req.body?.full_name} is added`,
     }
     await createNotification(data);
@@ -187,7 +187,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
       const admin = await getAdminData();
       const data = {
         user_id: admin?.id,
-        type: "User",
+        subject: "User",
         message: `User has been deleted.`
       }
       await createNotification(data);

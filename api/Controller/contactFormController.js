@@ -36,7 +36,7 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
     const admin = await getAdminData();
     const data = {
       user_id: admin?.id,
-      type: "Contact Form",
+      subject: "Contact Form",
       message: `${req.body.full_name} has submitted a contact form regarding ${req.body.subject}.`
     }
     await createNotification(data);

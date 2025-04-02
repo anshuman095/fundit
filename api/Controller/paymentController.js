@@ -180,7 +180,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
         const admin = await getAdminData();
         const data = {
             user_id: admin?.id,
-            type: "Donation",
+            subject: "Donation",
             message: `${userData[0].full_name} has donated ${paymentData[0].amount}`,
         }
         await createNotification(data);
