@@ -14,7 +14,7 @@ export const getNotification = asyncHandler(async (req, res) => {
 
     let whereClause = whereConditions.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
 
-    let query = `SELECT n.*, u.full_name AS user_name, u.email AS user_email FROM notification n LEFT JOIN users u ON n.user_id = u.id ${whereClause} ORDER BY created_at DESC`;
+    let query = `SELECT n.*, u.full_name AS user_name, u.image AS user_profile FROM notification n LEFT JOIN users u ON n.user_id = u.id ${whereClause} ORDER BY created_at DESC`;
     let countQuery = `SELECT COUNT(*) AS total FROM notification n ${whereClause}`;
 
     let page = parseInt(req.query.page);
