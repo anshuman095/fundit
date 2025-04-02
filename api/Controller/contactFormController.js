@@ -68,12 +68,12 @@ export const getContactForm = asyncHandler(async (req, res) => {
     const { search, filter } = req.query;
     let where = "WHERE deleted = 0";
     if (id) {
-      where = `AND id = ${id}`;
+      where += ` AND id = ${id}`;
     }
     if (filter) {
-      where = `AND id = ${filter}`;
+      where += ` AND id = ${filter}`;
     }
-    if(search) {
+    if (search) {
       where += ` AND (full_name LIKE '%${search}%' OR mobile LIKE '%${search}%')`;
     }
     const query = `SELECT * FROM contact_form ${where} LIMIT ${pageSize} OFFSET ${offset}`;
