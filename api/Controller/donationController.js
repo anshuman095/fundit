@@ -88,7 +88,7 @@ export const getDonation = asyncHandler(async (req, res) => {
   try {
     const roleId = req.user?.role_id;
     let type = req.query.type;
-    const { search } = req.query;
+    const { search, filter } = req.query;
     let page = parseInt(req.query.page) || 1;
     let pageSize = parseInt(req.query.pageSize) || 10;
     let offset = (page - 1) * pageSize;
@@ -99,6 +99,9 @@ export const getDonation = asyncHandler(async (req, res) => {
 
     if (req.params?.id) {
       whereConditions.push(`id = ${req.params.id}`);
+    }
+    if (filter) {
+      whereConditions.push(`id = ${filter}`);
     }
     if (search) {
       const lowerSearch = search.toLowerCase();
