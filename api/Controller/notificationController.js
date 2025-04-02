@@ -90,25 +90,6 @@ export const markNotificationAsRead = asyncHandler(async (req, res) => {
   }
 });
 
-export const markAllNotificationsAsRead = asyncHandler(async (req, res) => {
-  try {
-    const userId = req.user?.id;
-    let query = `UPDATE notification SET status = 'read' WHERE user_id = ${userId} AND status = 'unread'`;
-    await db.query(query);
-
-    return res.status(200).json({
-      status: true,
-      message: "All notifications marked as read",
-    });
-  } catch (error) {
-    storeError(error);
-    return res.status(500).json({
-      status: false,
-      error: error.message,
-    });
-  }
-});
-
 export const deleteNotification = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;

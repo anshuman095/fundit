@@ -102,6 +102,11 @@ const User = sequelize.define(
       allowNull: true,
       comment: "Donor or Volunteer or Staff",
     },
+    socket_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Socket id of user for notification",
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
