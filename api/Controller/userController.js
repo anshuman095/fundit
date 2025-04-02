@@ -63,6 +63,7 @@ export const userLogin = asyncHandler(async (req, res) => {
 export const createUpdateUser = asyncHandler(async (req, res) => {
   try {
     const { id, type } = req.body;
+    const io = req.app.get("io");
 
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);
@@ -144,7 +145,7 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
       subject: `${type ? `${type}` : "User"}`,
       message: `${req.body?.full_name} is added`,
     }
-    await createNotification(data);
+    await createNotification(data, io);
     return res.status(201).json({
       status: true,
       message: `${type ? `${type} created successfully` : "User created successfully"}`,
@@ -182,6 +183,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 export const deleteUser = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const io = req.app.get("io")
     const deleteUser = await deleteRecord("users", id);
     if (deleteUser) {
       const admin = await getAdminData();
@@ -190,7 +192,7 @@ export const deleteUser = asyncHandler(async (req, res) => {
         subject: "User",
         message: `User has been deleted.`
       }
-      await createNotification(data);
+      await createNotification(data, io);
       return res.status(200).json({
         status: true,
         message: "User deleted successfully",

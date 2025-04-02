@@ -16,6 +16,7 @@ const db = makeDb();
 export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
     try {
         const { id } = req.body;
+        const io = req.app.get("io");
 
         if (req.files) {
             for (const key of Object.keys(req.files)) {
@@ -39,7 +40,7 @@ export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
               subject: "Schedule Quote",
               message: `A schedule quote has been created.`
             }
-            await createNotification(data);
+            await createNotification(data, io);
         }
 
         return res.status(statusCode).json({
@@ -98,6 +99,7 @@ export const getScheduleQuote = asyncHandler(async (req, res) => {
 export const deleteScheduleQuote = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const io = req.app.get("io");
     const deleteScheduleQuoteQuery = await deleteRecord("schedule_quote", id);
     if (deleteScheduleQuoteQuery) {
       const admin = await getAdminData();
@@ -106,7 +108,7 @@ export const deleteScheduleQuote = asyncHandler(async (req, res) => {
         subject: "Schedule Quote",
         message: `A schedule quote has been deleted.`
       }
-      await createNotification(data);
+      await createNotification(data, io);
       return res.status(200).json({
         status: true,
         message: "Schedule Quote deleted successfully",

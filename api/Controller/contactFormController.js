@@ -16,6 +16,7 @@ const db = makeDb();
 
 export const createUpdateContactForm = asyncHandler(async (req, res) => {
   try {
+    const io = req.app.get("io");
     const { id } = req.body;
     if (id) {
       const { query, values } = updateQueryBuilder(ContactForm, req.body);
@@ -39,7 +40,7 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
       subject: "Contact Form",
       message: `${req.body.full_name} has submitted a contact form regarding ${req.body.subject}.`
     }
-    await createNotification(data);
+    await createNotification(data, io);
     await db.query(query, values);
     return res.status(201).json({
       status: true,

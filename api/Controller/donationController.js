@@ -21,6 +21,7 @@ const db = makeDb();
 
 export const createUpdateDonation = asyncHandler(async (req, res) => {
   try {
+    const io = req.app.get("io");
     const { id, full_name, aadhar_number, pan_number, donation_amount, mobile } = req.body;
     if (req.files) {
       for (const key of Object.keys(req.files)) {
@@ -66,7 +67,7 @@ export const createUpdateDonation = asyncHandler(async (req, res) => {
         subject: "Donation",
         message: `${req.body.full_name} has donated ${donation_amount}`,
       }
-      await createNotification(data);
+      await createNotification(data, io);
       return res.status(201).json({
         status: true,
         message: `Donation form submitted successfully`,
@@ -146,6 +147,7 @@ export const getDonation = asyncHandler(async (req, res) => {
 export const deleteDonation = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const io = req.app.get("io")
     const deleteDonationQuery = await deleteRecord("donation", id);
     if (deleteDonationQuery) {
       const admin = await getAdminData();
@@ -154,7 +156,7 @@ export const deleteDonation = asyncHandler(async (req, res) => {
         subject: "Donation",
         message: `Donation form has been deleted.`
       }
-      await createNotification(data);
+      await createNotification(data, io);
       return res.status(200).json({
         status: true,
         message: "Donation form deleted successfully",

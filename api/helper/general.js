@@ -1944,7 +1944,7 @@ export const getAdminData = async () => {
   }
 };
 
-export const createNotification = async (data) => {
+export const createNotification = async (data, io) => {
   try {
     const { user_id, message } = data;
 
@@ -1953,10 +1953,16 @@ export const createNotification = async (data) => {
     }
 
     const { query, values } = createQueryBuilder(Notification, data);
-    await db.query(query, values);
+    const result = await db.query(query, values);
 
+    const [notification] = await db.query("SELECT n.*, u.full_name AS user_name, u.image AS user_profile FROM notification n LEFT JOIN users u ON n.user_id = u.id WHERE n.id = ?", [result.insertId]);
+    const [user] = await db.query("SELECT socket_id FROM users WHERE id = ?", [user_id]);
+    if (user?.socket_id) {
+      io.to(user.socket_id).emit("newNotification", { data: notification, message: "Notification created successfully" });
+    }
     return "Notification created successfully";
   } catch (error) {
+    console.log('error:--------------------', error);
     storeError(error);
     throw new Error("Admin not found");
   }

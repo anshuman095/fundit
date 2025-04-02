@@ -127,6 +127,7 @@ export async function createPaymentData(data) {
 
 export const verifyPayment = asyncHandler(async (req, res) => {
     try {
+        const io = req.app.get("io");
         const { order_id, payment_id, signature } = req.body;
         let whereConditions = ["type = 'razorpay'"];
         let whereClause = whereConditions?.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
@@ -183,7 +184,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
             subject: "Donation",
             message: `${userData[0].full_name} has donated ${paymentData[0].amount}`,
         }
-        await createNotification(data);
+        await createNotification(data, io);
         return res.status(200).json({ status: true, message: "Payment verified successfully" });
     } catch (error) {
         storeError(error);
