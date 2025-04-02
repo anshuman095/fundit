@@ -64,7 +64,7 @@ export const createUpdateSubscribe = asyncHandler(async (req, res) => {
 
 export const getSubscribe = asyncHandler(async (req, res) => {
     try {
-        const { filter } = req.query;
+        const { search, filter } = req.query;
         let page = parseInt(req.query.page) || 1;
         let pageSize = parseInt(req.query.pageSize) || 10;
         let offset = (page - 1) * pageSize;
@@ -74,6 +74,12 @@ export const getSubscribe = asyncHandler(async (req, res) => {
         }
         if (filter) {
             whereConditions.push(`id = ${filter}`);
+        }
+        if (search) {
+            const lowerSearch = search.toLowerCase();
+            whereConditions.push(`(
+              LOWER(subscribe.email) LIKE '%${lowerSearch}%'
+            )`);
         }
         let whereClause = whereConditions?.length ? `WHERE ${whereConditions.join(" AND ")}` : "";
         const getSubscribeQuery = `SELECT * FROM subscribe ${whereClause} LIMIT ${pageSize} OFFSET ${offset}`;
