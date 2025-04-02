@@ -11,6 +11,10 @@ const Library = sequelize.define(
       primaryKey: true,
       comment: "Unique identifier for the library entry (auto-incremented)",
     },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     libraries: {
       type: DataTypes.JSON,
       allowNull: true,

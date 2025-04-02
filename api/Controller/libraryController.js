@@ -25,11 +25,21 @@ export const createUpdateLibrary = asyncHandler(async (req, res) => {
                 if (libraryAssetFile && typeof libraryAssetFile !== "string" && libraryAssetFile !== null) {
                     libraries[i].asset = await uploadFile("library", libraryAssetFile);
                 }
+
+                if (libraries[i].sub_section && Array.isArray(libraries[i].sub_section)) {
+                    for (let j = 0; j < libraries[i].sub_section.length; j++) {
+                        const librarySubSectionMediaFile = req.files[`libraries[${i}][sub_section][${j}][media]`];
+                        if (librarySubSectionMediaFile && typeof librarySubSectionMediaFile !== "string" && librarySubSectionMediaFile !== null) {
+                            libraries[i].sub_section[j].media = await uploadFile("library", librarySubSectionMediaFile);
+                        }
+                    }
+                }
             }
         }
 
         const dataToSave = {
             id: id || undefined,
+            ...req.body,
             libraries: libraries ? JSON?.stringify(libraries) : [],
         };
         let statusCode;
