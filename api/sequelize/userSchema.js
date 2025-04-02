@@ -113,6 +113,16 @@ const User = sequelize.define(
       defaultValue: 0,
       comment: "Indicator for soft deletion (0 for active, 1 for deleted)",
     },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+    },
   },
   { tableName: "users", timestamps: false, charset: "utf8mb4", collate: "utf8mb4_general_ci" }
 );
