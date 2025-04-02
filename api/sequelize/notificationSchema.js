@@ -33,6 +33,11 @@ const Notification = sequelize.define(
       defaultValue: "unread",
       comment: "Notification read status",
     },
+    redirect_url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Redirect url of notification",
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
