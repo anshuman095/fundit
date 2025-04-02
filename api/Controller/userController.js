@@ -138,7 +138,7 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
       }
     }
     const { query, values } = createQueryBuilder(User, req.body);
-    await db.query(query, values);
+    const result = await db.query(query, values);
     const admin = await getAdminData();
     const data = {
       user_id: admin?.id,
@@ -150,6 +150,7 @@ export const createUpdateUser = asyncHandler(async (req, res) => {
           : type === "Donar"
             ? "/donation-management/donars-and-volunteers?tab=donars"
               : "/donation-management/donars-and-volunteers?tab=volunteers",
+      view_notify: result.insertId,
     }
     await createNotification(data, io);
     return res.status(201).json({
