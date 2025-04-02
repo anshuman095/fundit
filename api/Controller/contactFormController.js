@@ -34,15 +34,18 @@ export const createUpdateContactForm = asyncHandler(async (req, res) => {
       });
     }
     const { query, values } = createQueryBuilder(ContactForm, req.body);
+    const result = await db.query(query, values);
+    
     const admin = await getAdminData();
     const data = {
       user_id: admin?.id,
       subject: "Contact Form",
       message: `${req.body.full_name} has submitted a contact form regarding ${req.body.subject}.`,
       redirect_url: "/website-query",
+      view_notify: result.insertId,
     }
     await createNotification(data, io);
-    await db.query(query, values);
+
     return res.status(201).json({
       status: true,
       message: "Contact details sent successfully",
