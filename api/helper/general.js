@@ -8,7 +8,7 @@ import moment from "moment";
 import { google } from "googleapis";
 import nodemailer from "nodemailer";
 import axios from "axios";
-import PDFDocument  from "pdfkit";
+import PDFDocument from "pdfkit";
 import { makeDb } from "../db-config.js";
 import { fileURLToPath } from "url";
 import Post from "../sequelize/postSchema.js";
@@ -541,7 +541,7 @@ export async function sendEmail(from, to, subject, html, attachment) {
     attachments: [
       {
         filename: attachment?.fileName,
-        path: attachment?.filePath,     
+        path: attachment?.filePath,
       },
     ],
   };
@@ -1211,76 +1211,76 @@ export function generateDonationEmail(userName, amount) {
 
 export function generateInvoice(data) {
   return new Promise((resolve, reject) => {
-      const doc = new PDFDocument({ margin: 50 });
-      const timestamp = moment().format("YYYY-MM-DD_HH-mm-ss");
-      const sanitizedUserName = data.full_name.replace(/[^a-zA-Z0-9]/g, "_");
-      const fileName = `invoice_${sanitizedUserName}_${timestamp}.pdf`;
-      const filePath = path.join(process.cwd(), "public", "invoice", fileName);
+    const doc = new PDFDocument({ margin: 50 });
+    const timestamp = moment().format("YYYY-MM-DD_HH-mm-ss");
+    const sanitizedUserName = data.full_name.replace(/[^a-zA-Z0-9]/g, "_");
+    const fileName = `invoice_${sanitizedUserName}_${timestamp}.pdf`;
+    const filePath = path.join(process.cwd(), "public", "invoice", fileName);
 
-      if (!fs.existsSync(path.dirname(filePath))) {
-          fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    if (!fs.existsSync(path.dirname(filePath))) {
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    }
+
+    const stream = fs.createWriteStream(filePath);
+    doc.pipe(stream);
+
+    // Title
+    doc.fontSize(20).text('Donation Invoice', { align: 'center' }).moveDown(2);
+
+    // Define table data dynamically
+    const tableData = [];
+    const fields = {
+      "Full Name": data?.full_name,
+      "Email": data?.email,
+      "Mobile": data?.mobile,
+      "Aadhar Number": data?.aadhar_number,
+      "PAN Number": data?.pan_number,
+      "Donation Amount": `Rs. ${data?.donation_amount}`,
+      "Address": data?.address,
+      "Donation Type": data?.donation_type,
+      "Anonymous": data?.anonymous === "1" ? "Yes" : "No",
+      // "Aadhar URL": data?.aadhar_url,
+      // "PAN URL": data?.pan_url
+    };
+
+    // Push only available fields to tableData
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value) {
+        tableData.push([key, value]);
       }
+    });
 
-      const stream = fs.createWriteStream(filePath);
-      doc.pipe(stream);
+    // Function to draw a table without headers
+    function drawTable(doc, startX, startY, tableData) {
+      const columnWidths = [200, 300]; // Define column widths
+      let y = startY;
 
-      // Title
-      doc.fontSize(20).text('Donation Invoice', { align: 'center' }).moveDown(2);
+      doc.fontSize(12).font("Helvetica");
+      tableData.forEach((row) => {
+        let x = startX;
 
-      // Define table data dynamically
-      const tableData = [];
-      const fields = {
-          "Full Name": data?.full_name,
-          "Email": data?.email,
-          "Mobile": data?.mobile,
-          "Aadhar Number": data?.aadhar_number,
-          "PAN Number": data?.pan_number,
-          "Donation Amount": `Rs. ${data?.donation_amount}`,
-          "Address": data?.address,
-          "Donation Type": data?.donation_type,
-          "Anonymous": data?.anonymous === "1" ? "Yes" : "No",
-          // "Aadhar URL": data?.aadhar_url,
-          // "PAN URL": data?.pan_url
-      };
+        row.forEach((cell, cellIndex) => {
+          doc.rect(x, y, columnWidths[cellIndex], 25).stroke();
+          doc.text(cell, x + 5, y + 7, { width: columnWidths[cellIndex] - 10 });
+          x += columnWidths[cellIndex];
+        });
 
-      // Push only available fields to tableData
-      Object.entries(fields).forEach(([key, value]) => {
-          if (value) {
-              tableData.push([key, value]);
-          }
+        y += 25;
       });
 
-      // Function to draw a table without headers
-      function drawTable(doc, startX, startY, tableData) {
-          const columnWidths = [200, 300]; // Define column widths
-          let y = startY;
+      return y;
+    }
 
-          doc.fontSize(12).font("Helvetica");
-          tableData.forEach((row) => {
-              let x = startX;
+    const tableStartY = doc.y;
+    drawTable(doc, 50, tableStartY, tableData);
 
-              row.forEach((cell, cellIndex) => {
-                  doc.rect(x, y, columnWidths[cellIndex], 25).stroke();
-                  doc.text(cell, x + 5, y + 7, { width: columnWidths[cellIndex] - 10 });
-                  x += columnWidths[cellIndex];
-              });
+    doc.moveDown(2);
+    doc.fontSize(14).text('Thank you for your generous donation!', { align: 'center' });
 
-              y += 25;
-          });
+    doc.end();
 
-          return y;
-      }
-
-      const tableStartY = doc.y;
-      drawTable(doc, 50, tableStartY, tableData);
-
-      doc.moveDown(2);
-      doc.fontSize(14).text('Thank you for your generous donation!', { align: 'center' });
-
-      doc.end();
-
-      stream.on('finish', () => resolve({ filePath, fileName }));
-      stream.on('error', reject);
+    stream.on('finish', () => resolve({ filePath, fileName }));
+    stream.on('error', reject);
   });
 }
 
@@ -1958,7 +1958,7 @@ export const createNotification = async (data, io) => {
     const [notification] = await db.query("SELECT n.*, u.full_name AS user_name, u.image AS user_profile FROM notification n LEFT JOIN users u ON n.user_id = u.id WHERE n.id = ?", [result.insertId]);
     const [user] = await db.query("SELECT socket_id FROM users WHERE id = ?", [user_id]);
     if (user?.socket_id) {
-      io.to(user.socket_id).emit("newNotification", { data: notification, message: "Notification created successfully" });
+      io.to(user.socket_id).emit("newNotification", { status: true, data: notification, message: "Notification created successfully" });
     }
     return "Notification created successfully";
   } catch (error) {
