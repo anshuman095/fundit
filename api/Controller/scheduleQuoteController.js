@@ -33,13 +33,14 @@ export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
         } else {
             statusCode = 201;
             const { query, values } = createQueryBuilder(ScheduleQuote, req.body);
-            await db.query(query, values);
+            const result = await db.query(query, values);
             const admin = await getAdminData();
             const data = {
               user_id: admin?.id,
               subject: "Schedule Quote",
               message: `A schedule quote has been created.`,
               redirect_url: "/others/schedule-quote",
+              view_notify: result.insertId,
             }
             await createNotification(data, io);
         }
