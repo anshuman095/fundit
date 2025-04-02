@@ -60,7 +60,7 @@ export const markNotificationAsRead = asyncHandler(async (req, res) => {
       if (checkResult[0].status === 'read') {
         return res.status(400).json({
           status: false,
-          error: "Notification already marked as read",
+          message: "Notification already marked as read",
         });
       }
 

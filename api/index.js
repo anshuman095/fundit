@@ -19,6 +19,7 @@ import swaggerUi from "swagger-ui-express";
 import { getProfile } from "./Controller/adminController.js";
 import { verifyToken } from "./helper/tokenVerify.js";
 import { saveRedirectUri } from "./helper/general.js";
+import initializeSocket from "./messaging.js";
 
 dotenv.config();
 
@@ -41,6 +42,11 @@ app.get("/", (req, res) => {
 });
 app.use("/api", routes);
 app.use("/api/client", clientRoutes);
+
+initializeSocket(server, app);
+
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+export default server;
