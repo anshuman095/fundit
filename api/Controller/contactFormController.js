@@ -73,9 +73,6 @@ export const getContactForm = asyncHandler(async (req, res) => {
     if (filter) {
       where = `AND id = ${filter}`;
     }
-    if (id) {
-      where = `AND id = ${id}`;
-    }
     if(search) {
       where += ` AND (full_name LIKE '%${search}%' OR mobile LIKE '%${search}%')`;
     }
