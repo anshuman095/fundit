@@ -38,6 +38,11 @@ const Notification = sequelize.define(
       allowNull: true,
       comment: "Redirect url of notification",
     },
+    view_notify: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: "Id of redirect single view page",
+    },
     deleted: {
       type: DataTypes.INTEGER,
       allowNull: false,
