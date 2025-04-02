@@ -177,13 +177,14 @@ export const verifyPayment = asyncHandler(async (req, res) => {
             donation_type: "Online",
         }
         const { query, values } = createQueryBuilder(Donation, donationData);
-        await db.query(query, values);
+        const result = await db.query(query, values);
         const admin = await getAdminData();
         const data = {
             user_id: admin?.id,
             subject: "Donation",
             message: `${userData[0].full_name} has donated ${paymentData[0].amount}`,
             redirect_url: "/donation-management/all-donation",
+            view_notify: result.insertId,
         }
         await createNotification(data, io);
         return res.status(200).json({ status: true, message: "Payment verified successfully" });
