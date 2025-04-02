@@ -11,6 +11,8 @@ const db = makeDb();
 
 const app = express();
 
+const server = http.createServer(app);
+
 import routes from "./Routes/adminRoutes/index.js";
 import clientRoutes from "./Routes/clientRoutes/clientRoutes.js";
 import swaggerUi from "swagger-ui-express";
@@ -39,6 +41,6 @@ app.get("/", (req, res) => {
 });
 app.use("/api", routes);
 app.use("/api/client", clientRoutes);
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
