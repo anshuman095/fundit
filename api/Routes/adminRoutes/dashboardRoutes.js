@@ -4,6 +4,6 @@ import { getDonationsByDateRange } from "../../Controller/dashboardController.js
 
 const dashboard = Router();
 
-dashboard.get("/get-dashboard/:id?", getDonationsByDateRange);
+dashboard.get("/donation", getDonationsByDateRange);
 
 export default dashboard;

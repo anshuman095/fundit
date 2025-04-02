@@ -16,12 +16,10 @@ export const getDonationsByDateRange = asyncHandler(async (req, res) => {
 
         const query = `
             SELECT * FROM donation
-            WHERE deleted = 0 AND created_at BETWEEN ? AND ?
+            WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'
             ORDER BY created_at DESC
         `;
-
-        const donations = await db.query(query, [start_date, end_date]);
-
+        const donations = await db.query(query);
         return res.status(200).json({
             status: true,
             data: donations,
