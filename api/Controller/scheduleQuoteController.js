@@ -60,13 +60,16 @@ export const createUpdateScheduleQuote = asyncHandler(async (req, res) => {
 
 export const getScheduleQuote = asyncHandler(async (req, res) => {
     try {
-        const { search } = req.query;
+        const { search, filter } = req.query;
         let page = parseInt(req.query.page) || 1;
         let pageSize = parseInt(req.query.pageSize) || 10;
         let offset = (page - 1) * pageSize;
         let whereConditions = ["deleted = 0"];
         if (req.params?.id) {
             whereConditions.push(`id = ${req.params.id}`);
+        }
+        if (filter) {
+            whereConditions.push(`id = ${filter}`);
         }
         if (search) {
             const lowerSearch = search.toLowerCase();
