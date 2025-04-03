@@ -1,29 +1,41 @@
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
-import { getCustomDateRangeSubtitle, getDateRange, getPreviousDateRange } from "../helper/general.js";
+import { getCustomDateRangeSubtitle, getDateRange, getPreviousDateRange, storeError } from "../helper/general.js";
 
 const db = makeDb();
 
 export const getDonationsByDateRange = asyncHandler(async (req, res) => {
     try {
-        const { start_date, end_date } = req.body;
-
-        if (!start_date || !end_date) {
-            return res.status(400).json({
-                status: false,
-                message: "Start date and end date are required.",
-            });
+        let { year } = req.query;
+        console.log('year--------------------', year);
+        if (!year) {
+            return res.status(400).json({ status: false, message: "Year is required." });
         }
 
         const query = `
-            SELECT * FROM donation
-            WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'
-            ORDER BY created_at DESC
+            SELECT 
+                MONTH(created_at) AS month,
+                SUM(donation_amount) AS total_donation
+            FROM donation
+            WHERE deleted = 0 AND YEAR(created_at) = ${year}
+            GROUP BY MONTH(created_at)
+            ORDER BY MONTH(created_at);
         `;
         const donations = await db.query(query);
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        const response = months.map((month, index) => {
+            const found = donations.find(d => d.month === index + 1);
+            return {
+                month,
+                total_donation: `₹ ${found ? found.total_donation : 0}`
+            };
+        });
         return res.status(200).json({
             status: true,
-            data: donations,
+            data: response,
         });
     } catch (error) {
         storeError(error);
@@ -42,10 +54,10 @@ const calculatePercentageChange = (current, previous) => {
 
 export const getSummary = asyncHandler(async (req, res) => {
     try {
-        let { range } = req.params;
+        let { range } = req.query;
         let { start_date, end_date } = req.query;
 
-        if (range !== "Custom") {
+        if (range !== "Custom Date") {
             ({ start_date, end_date } = getDateRange(range));
         }
 
@@ -117,6 +129,7 @@ export const getSummary = asyncHandler(async (req, res) => {
             },
         });
     } catch (error) {
+        storeError(error);
         return res.status(500).json({ status: false, message: error.message });
     }
 });
@@ -145,10 +158,10 @@ export const getRecentDonation = asyncHandler(async (req, res) => {
 
 export const getDonationGrowth = asyncHandler(async (req, res) => {
     try {
-        let { range } = req.params;
+        let { range } = req.query;
         let { start_date, end_date } = req.query;
 
-        if (range !== "Custom") {
+        if (range !== "Custom Date") {
             ({ start_date, end_date } = getDateRange(range));
         }
 
@@ -181,6 +194,7 @@ export const getDonationGrowth = asyncHandler(async (req, res) => {
             }
         });
     } catch (error) {
+        storeError(error);
         return res.status(500).json({ status: false, message: error.message });
     }
 });

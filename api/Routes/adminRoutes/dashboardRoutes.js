@@ -3,12 +3,12 @@ import { getDonationGrowth, getDonationsByDateRange, getRecentDonation, getSumma
 
 const dashboard = Router();
 
-dashboard.post("/donation", getDonationsByDateRange);
+dashboard.get("/donation", getDonationsByDateRange);
 
-dashboard.get("/get-summary/:range", getSummary);
+dashboard.get("/get-summary", getSummary);
 
 dashboard.get("/recent-donation", getRecentDonation);
 
-dashboard.get("/donation-growth/:range", getDonationGrowth);
+dashboard.get("/donation-growth", getDonationGrowth);
 
 export default dashboard;

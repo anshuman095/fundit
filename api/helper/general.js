@@ -2027,7 +2027,7 @@ export const getDateRange = (range) => {
 export const getPreviousDateRange = (range, start_date, end_date) => {
   let previousStartDate, previousEndDate;
 
-  if (range === "Custom") {
+  if (range === "Custom Date") {
     const startMoment = moment(start_date, "YYYY-MM-DD");
     const endMoment = moment(end_date, "YYYY-MM-DD");
 

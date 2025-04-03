@@ -14,8 +14,10 @@ const handleConnection = (io) => async (socket) => {
             const ip = socket.handshake.address || socket.handshake.headers["x-forwarded-for"];
             console.log('socket.handshake.address===========', socket.handshake.address);
             console.log('ip====================', ip);
+            console.log('web_socket', socket.connected);
             const socketId = socket.id;
             socket.visitorIp = ip;
+            console.log('socket.visitorIp---------------', socket.visitorIp);
             const visitor = await db.query("SELECT * FROM visitor WHERE ip_address = ? LIMIT 1", [ip]);
             console.log('visitor=======================', visitor);
             if (visitor.length > 0) {
