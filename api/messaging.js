@@ -1,12 +1,35 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-import { storeError } from "./helper/general.js";
+import { createQueryBuilder, storeError } from "./helper/general.js";
 import { makeDb } from "./db-config.js";
+import Visitor from "./sequelize/visitorSchema.js";
 
 const db = makeDb();
 
 const handleConnection = (io) => async (socket) => {
     try {
+        if (socket.handshake.origin === "http://192.168.1.45:5173/") {
+            const ip = socket.handshake.address || socket.handshake.headers["x-forwarded-for"];
+            console.log('socket.handshake.address===========', socket.handshake.address);
+            console.log('ip====================', ip);
+            const socketId = socket.id;
+            socket.visitorIp = ip;
+            const visitor = await db.query("SELECT * FROM visitor WHERE ip_address = ? LIMIT 1", [ip]);
+            console.log('visitor=======================', visitor);
+            if (visitor.length > 0) {
+                await db.query("UPDATE visitor SET socket_id = ?, status = 'Active' WHERE ip_address = ?", [
+                    socketId,
+                    ip,
+                ]);
+            } else {
+                const { query, values } = createQueryBuilder(Visitor, {
+                    ip_address: ip,
+                    socket_id: socketId,
+                    status: "Active",
+                });
+                await db.query(query, values);
+            }
+        }
         const token = socket.handshake.auth?.token || socket.handshake.headers?.auth;
         if (token) {
             const decodedToken = jwt.verify(token, process.env.JWT_KEY);
@@ -34,15 +57,14 @@ const handleConnection = (io) => async (socket) => {
                 id,
             ]);
             console.log(`User ${socket.user.id} disconnected`);
+            const visitorIp = socket.visitorIp;
 
-            const checkOnlineUsers = await db.query(
-                "SELECT id FROM users WHERE deleted = 0 AND socket_id IS NOT NULL"
-            );
-            const onlineUsers =
-                checkOnlineUsers.length > 0
-                    ? checkOnlineUsers.map((user) => user.id)
-                    : [];
-            io.emit("onlineUsers", onlineUsers);
+            if (visitorIp) {
+                await db.query("UPDATE visitor SET socket_id = NULL, status = 'Inactive' WHERE ip_address = ?", [
+                    visitorIp,
+                ]);
+                console.log(`Visitor with IP ${visitorIp} disconnected.`);
+            }
         } catch (error) {
             storeError(error);
         }

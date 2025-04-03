@@ -59,32 +59,35 @@ export const getSummary = asyncHandler(async (req, res) => {
         console.log('previousStartDate==============', previousStartDate);
         console.log('previousEndDate===================', previousEndDate);
 
-        const [staffCount, volunteerCount, donationSum, enquiryCount] = await Promise.all([
+        const [visitorCount, staffCount, volunteerCount, donationSum, enquiryCount, activeVisitorCount] = await Promise.all([
+            db.query(`SELECT COUNT(*) as count FROM visitor WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
             db.query(`SELECT COUNT(*) as count FROM users WHERE type = 'Staff' AND deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
             db.query(`SELECT COUNT(*) as count FROM users WHERE type = 'Volunteer' AND deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
             db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
             db.query(`SELECT COUNT(*) as count FROM contact_form WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
+            db.query(`SELECT COUNT(*) as count FROM visitor WHERE socket_id IS NOT NULL`),
         ]);
 
-        const [prevStaffCount, prevVolunteerCount, prevDonationSum, prevEnquiryCount] = await Promise.all([
+        const [prevVisitorCount, prevStaffCount, prevVolunteerCount, prevDonationSum, prevEnquiryCount] = await Promise.all([
+            db.query(`SELECT COUNT(*) as count FROM visitor WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
             db.query(`SELECT COUNT(*) as count FROM users WHERE type = 'Staff' AND deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
             db.query(`SELECT COUNT(*) as count FROM users WHERE type = 'Volunteer' AND deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
             db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
             db.query(`SELECT COUNT(*) as count FROM contact_form WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
         ]);
-        let visitorCount = [];
-        let activeVisitorCount = [];
 
         return res.status(200).json({
             status: true,
             data: {
                 total_visitors: {
                     title: "Total Visitors",
-                    count: visitorCount,
+                    count: visitorCount[0].count,
+                    value: calculatePercentageChange(visitorCount[0].count, prevVisitorCount[0].count),
+                    subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 active_visitors: {
                     title: "Active Visitors",
-                    count: activeVisitorCount,
+                    count: activeVisitorCount[0].count || 0,
                 },
                 total_staff: {
                     title: "Total Staff",

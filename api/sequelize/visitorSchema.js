@@ -11,6 +11,22 @@ const Visitor = sequelize.define(
             primaryKey: true,
             comment: "Unique identifier for the visitor (auto-incremented)",
         },
+        ip_address: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            comment: "IP Address of the visitor",
+        },
+        socket_id: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            comment: "Socket ID of the visitor",
+        },
+        status: {
+            type: DataTypes.ENUM("Active", "Inactive"),
+            allowNull: false,
+            defaultValue: "Active",
+            comment: "Visitor status (Active/Inactive)",
+        },
         deleted: {
             type: DataTypes.INTEGER,
             allowNull: false,
