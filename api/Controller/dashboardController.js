@@ -77,21 +77,25 @@ export const getSummary = asyncHandler(async (req, res) => {
             status: true,
             data: {
                 total_staff: {
+                    title: "Total Staff",
                     count: staffCount[0].count,
                     value: calculatePercentageChange(staffCount[0].count, prevStaffCount[0].count),
                     subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 total_volunteers: {
+                    title: "Total Volunteers",
                     count: volunteerCount[0].count,
                     value: calculatePercentageChange(volunteerCount[0].count, prevVolunteerCount[0].count),
                     subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 total_donations: {
+                    title: "Total Donations",
                     count: `₹ ${donationSum[0].total || 0}`,
                     value: calculatePercentageChange(donationSum[0].total || 0, prevDonationSum[0].total || 0),
                     subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 total_enquiries: {
+                    title: "Total Enquiries",
                     count: enquiryCount[0].count,
                     value: calculatePercentageChange(enquiryCount[0].count, prevEnquiryCount[0].count),
                     subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
