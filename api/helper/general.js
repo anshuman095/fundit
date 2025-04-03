@@ -1966,3 +1966,131 @@ export const createNotification = async (data, io) => {
     throw new Error(error);
   }
 };
+
+export const getDateRange = (range) => {
+  let start_date, end_date;
+  switch (range) {
+    case "Today":
+      start_date = moment().startOf("day").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("day").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Yesterday":
+      start_date = moment().subtract(1, "days").startOf("day").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().subtract(1, "days").endOf("day").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "This Week":
+      start_date = moment().startOf("week").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("week").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Last Week":
+      start_date = moment().subtract(1, "weeks").startOf("week").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().subtract(1, "weeks").endOf("week").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "This Month":
+      start_date = moment().startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("month").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Last Month":
+      start_date = moment().subtract(1, "months").startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().subtract(1, "months").endOf("month").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "This Quarter":
+      start_date = moment().startOf("quarter").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("quarter").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Last Quarter":
+      start_date = moment().subtract(1, "quarters").startOf("quarter").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().subtract(1, "quarters").endOf("quarter").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Last 6 Months":
+      start_date = moment().subtract(6, "months").startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("month").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Last 12 Months":
+      start_date = moment().subtract(12, "months").startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("month").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "This Year":
+      start_date = moment().startOf("year").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().endOf("year").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    case "Last Year":
+      start_date = moment().subtract(1, "years").startOf("year").format("YYYY-MM-DD HH:mm:ss");
+      end_date = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD HH:mm:ss");
+      break;
+    default:
+      throw new Error("Invalid date range");
+  }
+  return { start_date, end_date };
+};
+
+export const getPreviousDateRange = (range, start_date, end_date) => {
+  let previousStartDate, previousEndDate;
+
+  if (range === "Custom") {
+    const startMoment = moment(start_date, "YYYY-MM-DD");
+    const endMoment = moment(end_date, "YYYY-MM-DD");
+
+    // Calculate the difference in days
+    const daysDiff = endMoment.diff(startMoment, "days");
+
+    // Shift both dates back by the same difference
+    previousStartDate = startMoment.subtract(daysDiff + 1, "days").format("YYYY-MM-DD HH:mm:ss");
+    previousEndDate = endMoment.subtract(daysDiff + 1, "days").endOf("day").format("YYYY-MM-DD HH:mm:ss");
+  } else {
+    switch (range) {
+      case "Today":
+        previousStartDate = moment(start_date).subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Yesterday":
+        previousStartDate = moment(start_date).subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "This Week":
+        previousStartDate = moment(start_date).subtract(1, "weeks").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "weeks").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Last Week":
+        previousStartDate = moment(start_date).subtract(1, "weeks").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "weeks").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "This Month":
+        previousStartDate = moment(start_date).subtract(1, "months").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "months").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Last Month":
+        previousStartDate = moment(start_date).subtract(1, "months").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "months").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "This Quarter":
+        previousStartDate = moment(start_date).subtract(1, "quarters").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "quarters").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Last Quarter":
+        previousStartDate = moment(start_date).subtract(1, "quarters").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "quarters").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Last 6 Months":
+        previousStartDate = moment(start_date).subtract(6, "months").startOf("month").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(6, "months").endOf("month").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Last 12 Months":
+        previousStartDate = moment(start_date).subtract(12, "months").startOf("month").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(12, "months").endOf("month").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "This Year":
+        previousStartDate = moment(start_date).subtract(1, "years").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "years").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      case "Last Year":
+        previousStartDate = moment(start_date).subtract(1, "years").format("YYYY-MM-DD HH:mm:ss");
+        previousEndDate = moment(end_date).subtract(1, "years").format("YYYY-MM-DD HH:mm:ss");
+        break;
+      default:
+        throw new Error("Invalid date range");
+    }
+  }
+
+  return { previousStartDate, previousEndDate };
+};

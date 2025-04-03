@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { validate } from "../../helper/general.js";
-import { getDonationsByDateRange } from "../../Controller/dashboardController.js";
+import { getDonationsByDateRange, getRecentDonation, getSummary } from "../../Controller/dashboardController.js";
 
 const dashboard = Router();
 
 dashboard.post("/donation", getDonationsByDateRange);
+
+dashboard.get("/get-summary/:range", getSummary);
+
+dashboard.get("/recent-donation", getRecentDonation);
 
 export default dashboard;
