@@ -141,3 +141,6 @@ export const getRecentDonation = asyncHandler(async (req, res) => {
         });
     }
 });
+
+export const getDonationGrowth = asyncHandler(async (req, res) => {
+});
