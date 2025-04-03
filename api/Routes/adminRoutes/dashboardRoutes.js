@@ -9,6 +9,6 @@ dashboard.get("/get-summary/:range", getSummary);
 
 dashboard.get("/recent-donation", getRecentDonation);
 
-dashboard.get("/donation-growth", getDonationGrowth);
+dashboard.get("/donation-growth/:range", getDonationGrowth);
 
 export default dashboard;

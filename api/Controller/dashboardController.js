@@ -93,19 +93,19 @@ export const getSummary = asyncHandler(async (req, res) => {
                     title: "Total Staff",
                     count: staffCount[0].count,
                     value: calculatePercentageChange(staffCount[0].count, prevStaffCount[0].count),
-                    subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 total_volunteers: {
                     title: "Total Volunteers",
                     count: volunteerCount[0].count,
                     value: calculatePercentageChange(volunteerCount[0].count, prevVolunteerCount[0].count),
-                    subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 total_donations: {
                     title: "Total Donations",
                     count: `₹ ${donationSum[0].total || 0}`,
                     value: calculatePercentageChange(donationSum[0].total || 0, prevDonationSum[0].total || 0),
-                    subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
                 },
                 total_enquiries: {
                     title: "Total Enquiries",
@@ -143,4 +143,43 @@ export const getRecentDonation = asyncHandler(async (req, res) => {
 });
 
 export const getDonationGrowth = asyncHandler(async (req, res) => {
+    try {
+        let { range } = req.params;
+        let { start_date, end_date } = req.query;
+
+        if (range !== "Custom") {
+            ({ start_date, end_date } = getDateRange(range));
+        }
+
+        if (!start_date || !end_date) {
+            return res.status(400).json({ status: false, message: "Start date and end date are required." });
+        }
+        console.log('start_date=================', start_date);
+        console.log('end_date=======================', end_date);
+
+        const { previousStartDate, previousEndDate } = getPreviousDateRange(range, start_date, end_date);
+        console.log('previousStartDate==============', previousStartDate);
+        console.log('previousEndDate===================', previousEndDate);
+
+        const [currentDonation, previousDonation] = await Promise.all([
+            db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
+            db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`)
+        ]);
+
+        console.log('currentDonation:===============', currentDonation);
+        const currentTotal = currentDonation[0].total || 0;
+        const previousTotal = previousDonation[0].total || 0;
+        const percentageChange = calculatePercentageChange(currentTotal, previousTotal);
+
+        return res.status(200).json({
+            status: true,
+            data: {
+                current_total_donations: `₹ ${currentTotal}`,
+                previous_total_donations: `₹ ${previousTotal}`,
+                value: percentageChange
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({ status: false, message: error.message });
+    }
 });
