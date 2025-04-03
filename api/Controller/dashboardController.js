@@ -72,10 +72,20 @@ export const getSummary = asyncHandler(async (req, res) => {
             db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
             db.query(`SELECT COUNT(*) as count FROM contact_form WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`),
         ]);
+        let visitorCount = [];
+        let activeVisitorCount = [];
 
         return res.status(200).json({
             status: true,
             data: {
+                total_visitors: {
+                    title: "Total Visitors",
+                    count: visitorCount,
+                },
+                active_visitors: {
+                    title: "Active Visitors",
+                    count: activeVisitorCount,
+                },
                 total_staff: {
                     title: "Total Staff",
                     count: staffCount[0].count,
