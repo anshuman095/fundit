@@ -2094,3 +2094,19 @@ export const getPreviousDateRange = (range, start_date, end_date) => {
 
   return { previousStartDate, previousEndDate };
 };
+
+export const getCustomDateRangeSubtitle = (startDate, endDate) => {
+  const start = moment(startDate);
+  const end = moment(endDate);
+  const diffDays = end.diff(start, "days");
+  const diffMonths = end.diff(start, "months");
+  const diffYears = end.diff(start, "years");
+
+  if (diffYears > 0) {
+      return `Last ${diffYears} year${diffYears > 1 ? "s" : ""}`;
+  } else if (diffMonths > 0) {
+      return `Last ${diffMonths} month${diffMonths > 1 ? "s" : ""}`;
+  } else {
+      return `Last ${diffDays} day${diffDays > 1 ? "s" : ""}`;
+  }
+};

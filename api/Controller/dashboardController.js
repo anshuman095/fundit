@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
-import { getDateRange, getPreviousDateRange } from "../helper/general.js";
+import { getCustomDateRangeSubtitle, getDateRange, getPreviousDateRange } from "../helper/general.js";
 
 const db = makeDb();
 
@@ -58,6 +58,7 @@ export const getSummary = asyncHandler(async (req, res) => {
         const { previousStartDate, previousEndDate } = getPreviousDateRange(range, start_date, end_date);
         console.log('previousStartDate==============', previousStartDate);
         console.log('previousEndDate===================', previousEndDate);
+        const subtitle = getCustomDateRangeSubtitle(start_date, end_date);
 
         const [visitorCount, staffCount, volunteerCount, donationSum, enquiryCount, activeVisitorCount] = await Promise.all([
             db.query(`SELECT COUNT(*) as count FROM visitor WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
@@ -83,7 +84,7 @@ export const getSummary = asyncHandler(async (req, res) => {
                     title: "Total Visitors",
                     count: visitorCount[0].count,
                     value: calculatePercentageChange(visitorCount[0].count, prevVisitorCount[0].count),
-                    subtitle: range === "custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: subtitle,
                 },
                 active_visitors: {
                     title: "Active Visitors",
@@ -93,25 +94,25 @@ export const getSummary = asyncHandler(async (req, res) => {
                     title: "Total Staff",
                     count: staffCount[0].count,
                     value: calculatePercentageChange(staffCount[0].count, prevStaffCount[0].count),
-                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: subtitle,
                 },
                 total_volunteers: {
                     title: "Total Volunteers",
                     count: volunteerCount[0].count,
                     value: calculatePercentageChange(volunteerCount[0].count, prevVolunteerCount[0].count),
-                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: subtitle,
                 },
                 total_donations: {
                     title: "Total Donations",
                     count: `₹ ${donationSum[0].total || 0}`,
                     value: calculatePercentageChange(donationSum[0].total || 0, prevDonationSum[0].total || 0),
-                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: subtitle,
                 },
                 total_enquiries: {
                     title: "Total Enquiries",
                     count: enquiryCount[0].count,
                     value: calculatePercentageChange(enquiryCount[0].count, prevEnquiryCount[0].count),
-                    subtitle: range === "Custom" ? "Custom Date Range" : `Last ${range}`,
+                    subtitle: subtitle,
                 },
             },
         });

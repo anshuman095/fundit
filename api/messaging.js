@@ -8,7 +8,9 @@ const db = makeDb();
 
 const handleConnection = (io) => async (socket) => {
     try {
-        if (socket.handshake.origin === "http://192.168.1.45:5173/") {
+        console.log("socket.id----------", socket.id)
+        console.log('socket.handshake.headers.origin===============', socket.handshake.headers.origin);
+        if (socket.handshake.headers.origin === "http://192.168.1.45:5173") {
             const ip = socket.handshake.address || socket.handshake.headers["x-forwarded-for"];
             console.log('socket.handshake.address===========', socket.handshake.address);
             console.log('ip====================', ip);
@@ -52,12 +54,14 @@ const handleConnection = (io) => async (socket) => {
 
     socket.on("disconnect", async () => {
         try {
+            console.log("disconnectttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
             const { id } = socket.user;
             await db.query("UPDATE users SET socket_id = NULL WHERE id = ?", [
                 id,
             ]);
             console.log(`User ${socket.user.id} disconnected`);
             const visitorIp = socket.visitorIp;
+            console.log('visitorIp------------', visitorIp);
 
             if (visitorIp) {
                 await db.query("UPDATE visitor SET socket_id = NULL, status = 'Inactive' WHERE ip_address = ?", [
