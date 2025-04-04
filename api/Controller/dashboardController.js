@@ -1,13 +1,13 @@
 import asyncHandler from "express-async-handler";
 import { makeDb } from "../db-config.js";
 import { getCustomDateRangeSubtitle, getDateRange, getPreviousDateRange, storeError } from "../helper/general.js";
+import moment from "moment";
 
 const db = makeDb();
 
 export const getDonationsByDateRange = asyncHandler(async (req, res) => {
     try {
         let { year } = req.query;
-        console.log('year--------------------', year);
         if (!year) {
             return res.status(400).json({ status: false, message: "Year is required." });
         }
@@ -47,9 +47,9 @@ export const getDonationsByDateRange = asyncHandler(async (req, res) => {
 });
 
 const calculatePercentageChange = (current, previous) => {
-    if (previous === 0) return current > 0 ? "100%" : "0%";
+    if (previous === 0) return current > 0 ? "100" : "0";
     const change = ((current - previous) / previous) * 100;
-    return `${change.toFixed(1)}%`;
+    return `${change.toFixed(1)}`;
 };
 
 export const getSummary = asyncHandler(async (req, res) => {
@@ -64,12 +64,8 @@ export const getSummary = asyncHandler(async (req, res) => {
         if (!start_date || !end_date) {
             return res.status(400).json({ status: false, message: "Start date and end date are required." });
         }
-        console.log('start_date=================', start_date);
-        console.log('end_date=======================', end_date);
 
         const { previousStartDate, previousEndDate } = getPreviousDateRange(range, start_date, end_date);
-        console.log('previousStartDate==============', previousStartDate);
-        console.log('previousEndDate===================', previousEndDate);
         const subtitle = getCustomDateRangeSubtitle(start_date, end_date);
 
         const [visitorCount, staffCount, volunteerCount, donationSum, enquiryCount, activeVisitorCount] = await Promise.all([
@@ -158,37 +154,34 @@ export const getRecentDonation = asyncHandler(async (req, res) => {
 
 export const getDonationGrowth = asyncHandler(async (req, res) => {
     try {
-        let { range } = req.query;
-        let { start_date, end_date } = req.query;
+        const currentMonthStart = moment().startOf("month").format("YYYY-MM-DD");
+        const currentMonthEnd = moment().endOf("month").format("YYYY-MM-DD");
 
-        if (range !== "Custom Date") {
-            ({ start_date, end_date } = getDateRange(range));
-        }
-
-        if (!start_date || !end_date) {
-            return res.status(400).json({ status: false, message: "Start date and end date are required." });
-        }
-        console.log('start_date=================', start_date);
-        console.log('end_date=======================', end_date);
-
-        const { previousStartDate, previousEndDate } = getPreviousDateRange(range, start_date, end_date);
-        console.log('previousStartDate==============', previousStartDate);
-        console.log('previousEndDate===================', previousEndDate);
+        const previousMonthStart = moment().subtract(1, "months").startOf("month").format("YYYY-MM-DD");
+        const previousMonthEnd = moment().subtract(1, "months").endOf("month").format("YYYY-MM-DD");
 
         const [currentDonation, previousDonation] = await Promise.all([
-            db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${start_date}' AND '${end_date}'`),
-            db.query(`SELECT SUM(donation_amount) as total FROM donation WHERE deleted = 0 AND created_at BETWEEN '${previousStartDate}' AND '${previousEndDate}'`)
+            db.query(
+                `SELECT SUM(donation_amount) as total FROM donation 
+                 WHERE deleted = 0 AND created_at BETWEEN '${currentMonthStart}' AND '${currentMonthEnd}'`
+            ),
+            db.query(
+                `SELECT SUM(donation_amount) as total FROM donation 
+                 WHERE deleted = 0 AND created_at BETWEEN '${previousMonthStart}' AND '${previousMonthEnd}'`
+            )
         ]);
 
-        console.log('currentDonation:===============', currentDonation);
-        const currentTotal = currentDonation[0].total || 0;
-        const previousTotal = previousDonation[0].total || 0;
+        const currentTotal = currentDonation[0]?.total || 0;
+        const previousTotal = previousDonation[0]?.total || 0;
+
         const percentageChange = calculatePercentageChange(currentTotal, previousTotal);
 
         return res.status(200).json({
             status: true,
             data: {
+                current_month: moment().format("MMMM"), 
                 current_total_donations: `₹ ${currentTotal}`,
+                previous_month: moment().subtract(1, "months").format("MMMM"),
                 previous_total_donations: `₹ ${previousTotal}`,
                 value: percentageChange
             }
