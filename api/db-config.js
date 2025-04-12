@@ -3,7 +3,7 @@ import util from "util";
 const config = {
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "12345",
   database: "rk_mission",
 };
 export const con = mysql.createConnection(config);
