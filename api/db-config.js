@@ -1,10 +1,10 @@
 import mysql from "mysql2";
 import util from "util";
 const config = {
-  host: "localhost",
-  user: "root",
-  password: "12345",
-  database: "rk_mission",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 export const con = mysql.createConnection(config);
 
